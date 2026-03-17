@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand Safety Measurement Funnel · CMI Media Group</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: #f5f4f0;
+      color: #1a1a18;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .page {
+      max-width: 980px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      border: 0.5px solid #d3d1c7;
+      padding: 2rem;
+    }
+
+    .title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a18;
+      text-align: center;
+      margin-bottom: 1.75rem;
+      letter-spacing: 0.02em;
+    }
+
+    .funnel-layout {
+      display: grid;
+      grid-template-columns: 230px 1fr;
+      gap: 0;
+      align-items: start;
+    }
+
+    .funnel-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .detail-col {
+      display: flex;
+      flex-direction: column;
+      padding-left: 16px;
+    }
+
+    .detail-panel {
+      border: 0.5px solid #d3d1c7;
+      border-radius: 12px;
+      background: #ffffff;
+      padding: 1rem 1.25rem;
+      margin-bottom: 12px;
+    }
+    .detail-panel:last-child { margin-bottom: 0; }
+
+    .panel-label {
+      font-size: 11px;
+      color: #73726c;
+      margin-bottom: 2px;
+      letter-spacing: 0.02em;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a18;
+      margin-bottom: 0.75rem;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    table.data-table thead th {
+      color: #73726c;
+      font-weight: 400;
+      padding: 4px 0;
+      font-size: 11px;
+      text-align: left;
+    }
+    table.data-table thead th:last-child { text-align: right; }
+    table.data-table tbody tr { border-top: 0.5px solid #d3d1c7; }
+    table.data-table tbody td {
+      padding: 5px 0;
+      color: #1a1a18;
+      vertical-align: middle;
+    }
+    table.data-table tbody td:last-child {
+      text-align: right;
+      color: #73726c;
+    }
+
+    .bar-cell { display: flex; align-items: center; gap: 6px; }
+    .bar-bg { background: #f1efe8; border-radius: 2px; height: 6px; flex: 1; min-width: 60px; }
+    .bar-fill { height: 6px; border-radius: 2px; background: #3266ad; }
+
+    .total-row { font-size: 11px; color: #73726c; margin-top: 6px; }
+
+    .flex-row { display: flex; gap: 12px; }
+    .metric-card {
+      flex: 1;
+      background: #f1efe8;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .mc-label { font-size: 11px; color: #73726c; margin-bottom: 2px; }
+    .mc-val { font-size: 20px; font-weight: 500; color: #1a1a18; }
+
+    .fnode {
+      border: 0.5px solid #d3d1c7;
+      border-radius: 8px;
+      padding: 8px 12px;
+      background: #f1efe8;
+    }
+    .fn-label { font-size: 10px; color: #73726c; }
+    .fn-num { font-size: 17px; font-weight: 500; color: #1a1a18; }
+
+    .funnel-connector { display: block; overflow: visible; }
+
+    /* print / export polish */
+    @media print {
+      body { background: #fff; padding: 0; }
+      .page { border: none; border-radius: 0; padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <p class="title">Brand Safety Measurement Funnel &nbsp;·&nbsp; CMI Media Group — Feb 2025</p>
+
+  <div class="funnel-layout">
+    <!-- LEFT: funnel -->
+    <div class="funnel-col">
+
+      <div class="fnode" style="width:200px;">
+        <div class="fn-label">Total brand safety events</div>
+        <div class="fn-num">54,178</div>
+      </div>
+
+      <svg class="funnel-connector" width="200" height="52" viewBox="0 0 200 52">
+        <defs>
+          <marker id="ah1" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M1 1L9 5L1 9" fill="none" stroke="#3266ad" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+        <polygon points="20,0 180,0 150,38 50,38" fill="#3266ad" opacity="0.12"/>
+        <line x1="20" y1="0" x2="50" y2="38" stroke="#3266ad" stroke-width="1.5" opacity="0.5"/>
+        <line x1="180" y1="0" x2="150" y2="38" stroke="#3266ad" stroke-width="1.5" opacity="0.5"/>
+        <line x1="100" y1="2" x2="100" y2="42" stroke="#3266ad" stroke-width="2" marker-end="url(#ah1)"/>
+        <text x="100" y="22" text-anchor="middle" font-size="10" fill="#3266ad" font-family="-apple-system, sans-serif" opacity="0.9">100% evaluated</text>
+      </svg>
+
+      <div class="fnode" style="width:160px;">
+        <div class="fn-label">Unique URLs flagged</div>
+        <div class="fn-num">3,861</div>
+      </div>
+
+      <svg class="funnel-connector" width="200" height="52" viewBox="0 0 200 52">
+        <defs>
+          <marker id="ah2" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M1 1L9 5L1 9" fill="none" stroke="#d4750e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+        <polygon points="40,0 160,0 130,38 70,38" fill="#d4750e" opacity="0.12"/>
+        <line x1="40" y1="0" x2="70" y2="38" stroke="#d4750e" stroke-width="1.5" opacity="0.5"/>
+        <line x1="160" y1="0" x2="130" y2="38" stroke="#d4750e" stroke-width="1.5" opacity="0.5"/>
+        <line x1="100" y1="2" x2="100" y2="42" stroke="#d4750e" stroke-width="2" marker-end="url(#ah2)"/>
+        <text x="100" y="22" text-anchor="middle" font-size="10" fill="#d4750e" font-family="-apple-system, sans-serif" opacity="0.9">top segments</text>
+      </svg>
+
+      <div class="fnode" style="width:140px; background:#fff7e6; border-color:#e8a94c;">
+        <div class="fn-label" style="color:#9a6200;">Gambling — Low (top)</div>
+        <div class="fn-num" style="color:#9a6200;">17,171</div>
+      </div>
+
+      <svg class="funnel-connector" width="200" height="52" viewBox="0 0 200 52">
+        <defs>
+          <marker id="ah3" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+            <path d="M1 1L9 5L1 9" fill="none" stroke="#c0392b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+        <polygon points="60,0 140,0 115,38 85,38" fill="#c0392b" opacity="0.1"/>
+        <line x1="60" y1="0" x2="85" y2="38" stroke="#c0392b" stroke-width="1.5" opacity="0.5"/>
+        <line x1="140" y1="0" x2="115" y2="38" stroke="#c0392b" stroke-width="1.5" opacity="0.5"/>
+        <line x1="100" y1="2" x2="100" y2="42" stroke="#c0392b" stroke-width="2" marker-end="url(#ah3)"/>
+        <text x="100" y="22" text-anchor="middle" font-size="10" fill="#c0392b" font-family="-apple-system, sans-serif" opacity="0.9">31.7% of events</text>
+      </svg>
+
+      <div class="fnode" style="width:120px; background:#fdf0f0; border-color:#d06060;">
+        <div class="fn-label" style="color:#8b2020;">High-severity</div>
+        <div class="fn-num" style="color:#8b2020;">37</div>
+        <div class="fn-label" style="color:#8b2020; margin-top:2px;">High-risk flags</div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: detail panels -->
+    <div class="detail-col">
+
+      <div class="detail-panel">
+        <div class="panel-label">Overview</div>
+        <div class="flex-row" style="margin-top:6px">
+          <div class="metric-card"><div class="mc-label">Total events</div><div class="mc-val">54,178</div></div>
+          <div class="metric-card"><div class="mc-label">Unique URLs</div><div class="mc-val">3,861</div></div>
+          <div class="metric-card"><div class="mc-label">Segments flagged</div><div class="mc-val">19</div></div>
+          <div class="metric-card"><div class="mc-label">Total rows</div><div class="mc-val">5,001</div></div>
+        </div>
+      </div>
+
+      <div class="detail-panel">
+        <div class="panel-label">Brand Safety Violations</div>
+        <div class="panel-title" style="margin-bottom:4px;">Top segments by total events</div>
+        <p style="font-size:11px; color:#73726c; margin-bottom:8px;">Top segments flagged · a URL may match multiple segments</p>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Segment</th>
+              <th style="text-align:right; padding-right:8px">Events</th>
+              <th style="text-align:right">% of total</th>
+            </tr>
+          </thead>
+          <tbody id="seg-tbody"></tbody>
+        </table>
+        <div class="total-row">Total: 54,178 events across 19 segments (rows are non-additive — one URL may match multiple segments)</div>
+      </div>
+
+      <div class="detail-panel">
+        <div class="panel-label">Severity breakdown</div>
+        <div class="panel-title" style="margin-bottom:8px;">Events by risk level</div>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Risk level</th>
+              <th style="text-align:right; padding-right:8px">Events</th>
+              <th style="text-align:right">% share</th>
+            </tr>
+          </thead>
+          <tbody id="sev-tbody"></tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const segments = [
+  { name: "Gambling - Low", events: 17171 },
+  { name: "Online Piracy - Low", events: 10139 },
+  { name: "Negative News: Pharmaceutical - Low", events: 8007 },
+  { name: "Negative News: Financial - Low", events: 7547 },
+  { name: "Illegal Drugs/Tobacco/E-Cig/Vaping/Alcohol - Med", events: 3123 },
+  { name: "Adult & Explicit Sexual Content - Med", events: 2858 },
+  { name: "Gambling - Med", events: 1010 },
+  { name: "Crime & Harmful Acts > Bullying/Harassment - Med", events: 981 },
+  { name: "Crime & Harmful Acts > Crime - Med", events: 777 },
+  { name: "Negative News: Pharmaceutical - Med", events: 762 },
+  { name: "Obscenity and Profanity > Profanity - Med", events: 718 },
+  { name: "Sensitive Social Issues - Med", events: 608 },
+  { name: "Hate Speech & Acts of Aggression - Med", events: 259 },
+  { name: "Terrorism - Med", events: 102 },
+  { name: "Negative News: Financial - Med", events: 68 },
+  { name: "Gambling - High", events: 17 },
+  { name: "Negative News: Pharmaceutical - High", events: 12 },
+  { name: "Online Piracy - Med", events: 11 },
+  { name: "Online Piracy - High", events: 8 },
+];
+
+const total = 54178;
+const maxEv = segments[0].events;
+const segTbody = document.getElementById('seg-tbody');
+segments.forEach(s => {
+  const pct = ((s.events / total) * 100).toFixed(1);
+  const barW = Math.round((s.events / maxEv) * 100);
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td style="max-width:240px; padding-right:8px">${s.name}</td>
+    <td style="text-align:right; padding-right:8px; white-space:nowrap">${s.events.toLocaleString()}</td>
+    <td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:${barW}%"></div></div><span style="min-width:36px; text-align:right; color:#73726c">${pct}%</span></div></td>`;
+  segTbody.appendChild(tr);
+});
+
+const sevData = [
+  { label: "Low risk", events: segments.filter(s => s.name.includes('Low')).reduce((a, s) => a + s.events, 0), color: '#3266ad' },
+  { label: "Medium risk", events: segments.filter(s => s.name.includes('Med')).reduce((a, s) => a + s.events, 0), color: '#d4750e' },
+  { label: "High risk", events: segments.filter(s => s.name.includes('High')).reduce((a, s) => a + s.events, 0), color: '#c0392b' },
+];
+const sevMax = sevData[0].events;
+const sevTotal = sevData.reduce((a, s) => a + s.events, 0);
+const sevTbody = document.getElementById('sev-tbody');
+sevData.forEach(s => {
+  const pct = ((s.events / sevTotal) * 100).toFixed(1);
+  const barW = Math.round((s.events / sevMax) * 100);
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td style="padding-right:8px">${s.label}</td>
+    <td style="text-align:right; padding-right:8px">${s.events.toLocaleString()}</td>
+    <td><div class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:${barW}%; background:${s.color}"></div></div><span style="min-width:36px; text-align:right; color:#73726c">${pct}%</span></div></td>`;
+  sevTbody.appendChild(tr);
+});
+</script>
+</body>
+</html>
