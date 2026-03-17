@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand Safety Sankey · CMI Media Group</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      background: #f5f4f0;
+      color: #1a1a18;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .page {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      border-radius: 12px;
+      border: 0.5px solid #d3d1c7;
+      padding: 2rem;
+    }
+
+    .title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1a1a18;
+      text-align: center;
+      margin-bottom: 1.25rem;
+      letter-spacing: 0.02em;
+    }
+
+    #sankey-container {
+      width: 100%;
+      position: relative;
+    }
+
+    .tooltip {
+      position: absolute;
+      background: #ffffff;
+      border: 0.5px solid #b4b2a9;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #1a1a18;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      max-width: 220px;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .tooltip strong { font-weight: 500; display: block; margin-bottom: 2px; }
+    .tooltip span { color: #73726c; }
+
+    .legend {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: #73726c;
+    }
+    .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+    @media print {
+      body { background: #fff; padding: 0; }
+      .page { border: none; border-radius: 0; padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <p class="title">Brand Safety Measurement Funnel · CMI Media Group — Feb 2025</p>
+
+  <div id="sankey-container">
+    <div class="tooltip" id="tip"></div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:#3266ad"></div>Total / Low risk</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#d4750e"></div>Medium risk</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#c0392b"></div>High risk</div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script>
+const WIDTH = 760, HEIGHT = 560, PAD = { top: 10, right: 180, bottom: 10, left: 10 };
+
+const nodesData = [
+  { id: "total",     label: "Total Events",               col: 0, color: "#3266ad" },
+  { id: "low",       label: "Low Risk",                   col: 1, color: "#3266ad" },
+  { id: "med",       label: "Medium Risk",                col: 1, color: "#d4750e" },
+  { id: "high",      label: "High Risk",                  col: 1, color: "#c0392b" },
+  { id: "g_low",     label: "Gambling - Low",             col: 2, color: "#3266ad" },
+  { id: "op_low",    label: "Online Piracy - Low",        col: 2, color: "#3266ad" },
+  { id: "nnp_low",   label: "Neg. News: Pharma - Low",    col: 2, color: "#3266ad" },
+  { id: "nnf_low",   label: "Neg. News: Financial - Low", col: 2, color: "#3266ad" },
+  { id: "drug_med",  label: "Drugs/Tobacco - Med",        col: 2, color: "#d4750e" },
+  { id: "adult_med", label: "Adult Content - Med",        col: 2, color: "#d4750e" },
+  { id: "g_med",     label: "Gambling - Med",             col: 2, color: "#d4750e" },
+  { id: "bully_med", label: "Bullying/Harassment - Med",  col: 2, color: "#d4750e" },
+  { id: "crime_med", label: "Crime - Med",                col: 2, color: "#d4750e" },
+  { id: "nnp_med",   label: "Neg. News: Pharma - Med",   col: 2, color: "#d4750e" },
+  { id: "other_med", label: "Other Med Risk",             col: 2, color: "#d4750e" },
+  { id: "high_seg",  label: "High-Risk Flags",            col: 2, color: "#c0392b" },
+];
+
+const linksData = [
+  { source: "total", target: "low",  value: 42864 },
+  { source: "total", target: "med",  value: 11277 },
+  { source: "total", target: "high", value: 37 },
+  { source: "low", target: "g_low",   value: 17171 },
+  { source: "low", target: "op_low",  value: 10139 },
+  { source: "low", target: "nnp_low", value: 8007 },
+  { source: "low", target: "nnf_low", value: 7547 },
+  { source: "med", target: "drug_med",  value: 3123 },
+  { source: "med", target: "adult_med", value: 2858 },
+  { source: "med", target: "g_med",     value: 1010 },
+  { source: "med", target: "bully_med", value: 981 },
+  { source: "med", target: "crime_med", value: 777 },
+  { source: "med", target: "nnp_med",   value: 762 },
+  { source: "med", target: "other_med", value: 1766 },
+  { source: "high", target: "high_seg", value: 37 },
+];
+
+const TOTAL = 54178;
+function fmt(n) { return n.toLocaleString(); }
+function pct(n) { return ((n / TOTAL) * 100).toFixed(1) + "%"; }
+
+const nodeMap = {};
+nodesData.forEach(n => { nodeMap[n.id] = n; });
+
+nodesData.forEach(n => { n.value = 0; });
+linksData.forEach(l => { nodeMap[l.target].value += l.value; });
+nodeMap["total"].value = TOTAL;
+
+const cols = [0, 1, 2];
+const colNodes = cols.map(c => nodesData.filter(n => n.col === c));
+const innerW = WIDTH - PAD.left - PAD.right;
+const innerH = HEIGHT - PAD.top - PAD.bottom;
+const colX = [PAD.left, PAD.left + innerW * 0.38, PAD.left + innerW * 0.72];
+const NODE_W = 14;
+const GAP = 6;
+
+colNodes.forEach((nodes, ci) => {
+  const totalVal = nodes.reduce((s, n) => s + n.value, 0);
+  const totalGap = GAP * (nodes.length - 1);
+  const scale = (innerH - totalGap) / totalVal;
+  let y = PAD.top;
+  nodes.forEach(n => {
+    n.x = colX[ci];
+    n.y = y;
+    n.h = Math.max(n.value * scale, 2);
+    y += n.h + GAP;
+    n.inOffset = 0;
+    n.outOffset = 0;
+  });
+});
+
+linksData.forEach(l => {
+  const src = nodeMap[l.source];
+  const tgt = nodeMap[l.target];
+  const srcScale = src.h / src.value;
+  const tgtScale = tgt.h / tgt.value;
+  l.h = Math.max(l.value * Math.min(srcScale, tgtScale), 1);
+  l.sy = src.y + src.outOffset + l.h / 2;
+  l.ty = tgt.y + tgt.inOffset + l.h / 2;
+  src.outOffset += l.h + 1;
+  tgt.inOffset += l.h + 1;
+  l.srcX = src.x + NODE_W;
+  l.tgtX = tgt.x;
+  l.color = src.color;
+});
+
+const svg = d3.select("#sankey-container")
+  .append("svg")
+  .attr("width", "100%")
+  .attr("viewBox", `0 0 ${WIDTH} ${HEIGHT}`)
+  .style("overflow", "visible");
+
+const tip = document.getElementById("tip");
+const container = document.getElementById("sankey-container");
+
+function showTip(event, html) {
+  tip.innerHTML = html;
+  tip.style.opacity = 1;
+  moveTip(event);
+}
+function moveTip(event) {
+  const svgEl = container.querySelector("svg");
+  const svgRect = svgEl.getBoundingClientRect();
+  let x = (event.clientX - svgRect.left) / svgRect.width * WIDTH;
+  let y = (event.clientY - svgRect.top) / svgRect.height * HEIGHT;
+  const tipW = 200;
+  const tx = x + 12 + tipW > WIDTH ? x - tipW - 8 : x + 12;
+  const ty = y - 10 < 0 ? y + 10 : y - 20;
+  tip.style.left = (tx / WIDTH * 100) + "%";
+  tip.style.top = ty + "px";
+}
+function hideTip() { tip.style.opacity = 0; }
+
+svg.selectAll(".link")
+  .data(linksData)
+  .join("path")
+  .attr("class", "link")
+  .attr("d", d => {
+    const x0 = d.srcX, x1 = d.tgtX;
+    const mx = (x0 + x1) / 2;
+    return `M${x0},${d.sy - d.h/2} C${mx},${d.sy - d.h/2} ${mx},${d.ty - d.h/2} ${x1},${d.ty - d.h/2}
+            L${x1},${d.ty + d.h/2} C${mx},${d.ty + d.h/2} ${mx},${d.sy + d.h/2} ${x0},${d.sy + d.h/2} Z`;
+  })
+  .attr("fill", d => d.color)
+  .attr("opacity", 0.18)
+  .style("cursor", "pointer")
+  .on("mouseover", function(event, d) {
+    d3.select(this).attr("opacity", 0.38);
+    const src = nodeMap[d.source];
+    const tgt = nodeMap[d.target];
+    showTip(event, `<strong>${src.label} → ${tgt.label}</strong><span>${fmt(d.value)} events &nbsp;·&nbsp; ${pct(d.value)}</span>`);
+  })
+  .on("mousemove", moveTip)
+  .on("mouseout", function() {
+    d3.select(this).attr("opacity", 0.18);
+    hideTip();
+  });
+
+const nodeG = svg.selectAll(".node")
+  .data(nodesData)
+  .join("g")
+  .attr("class", "node")
+  .style("cursor", "pointer");
+
+nodeG.append("rect")
+  .attr("x", d => d.x)
+  .attr("y", d => d.y)
+  .attr("width", NODE_W)
+  .attr("height", d => d.h)
+  .attr("rx", 3)
+  .attr("fill", d => d.color)
+  .attr("opacity", 0.85)
+  .on("mouseover", function(event, d) {
+    d3.select(this).attr("opacity", 1);
+    showTip(event, `<strong>${d.label}</strong><span>${fmt(d.value)} events &nbsp;·&nbsp; ${pct(d.value)}</span>`);
+  })
+  .on("mousemove", moveTip)
+  .on("mouseout", function() {
+    d3.select(this).attr("opacity", 0.85);
+    hideTip();
+  });
+
+nodeG.append("text")
+  .attr("x", d => d.x + NODE_W + 6)
+  .attr("y", d => d.y + d.h / 2)
+  .attr("dominant-baseline", "central")
+  .attr("font-size", d => d.col === 2 ? "10.5" : "11.5")
+  .attr("font-family", "-apple-system, BlinkMacSystemFont, sans-serif")
+  .attr("fill", "#1a1a18")
+  .attr("opacity", 0.85)
+  .text(d => d.label);
+
+nodesData.filter(d => d.col < 2).forEach(d => {
+  svg.append("text")
+    .attr("x", d.x + NODE_W + 6)
+    .attr("y", d.y + d.h / 2 + 13)
+    .attr("font-size", "10")
+    .attr("font-family", "-apple-system, BlinkMacSystemFont, sans-serif")
+    .attr("fill", "#73726c")
+    .text(fmt(d.value) + " · " + pct(d.value));
+});
+</script>
+</body>
+</html>
