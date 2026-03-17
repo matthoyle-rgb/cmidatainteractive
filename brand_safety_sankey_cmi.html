@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Brand Safety Sankey · CMI Media Group</title>
+  <title>Brand Safety Sankey v2 · CMI Media Group</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -80,14 +80,14 @@
 </head>
 <body>
 <div class="page">
-  <p class="title">Brand Safety Measurement Funnel · CMI Media Group — Feb 2025</p>
+  <p class="title">Brand Safety Measurement Funnel · CMI Media Group</p>
 
   <div id="sankey-container">
     <div class="tooltip" id="tip"></div>
   </div>
 
   <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:#3266ad"></div>Total / Low risk</div>
+    <div class="legend-item"><div class="legend-dot" style="background:#3266ad"></div>Low risk</div>
     <div class="legend-item"><div class="legend-dot" style="background:#d4750e"></div>Medium risk</div>
     <div class="legend-item"><div class="legend-dot" style="background:#c0392b"></div>High risk</div>
   </div>
@@ -95,43 +95,45 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script>
-const WIDTH = 760, HEIGHT = 560, PAD = { top: 10, right: 180, bottom: 10, left: 10 };
+const WIDTH = 780, HEIGHT = 580, PAD = { top: 10, right: 185, bottom: 10, left: 10 };
 
 const nodesData = [
-  { id: "total",     label: "Total Events",               col: 0, color: "#3266ad" },
-  { id: "low",       label: "Low Risk",                   col: 1, color: "#3266ad" },
-  { id: "med",       label: "Medium Risk",                col: 1, color: "#d4750e" },
-  { id: "high",      label: "High Risk",                  col: 1, color: "#c0392b" },
-  { id: "g_low",     label: "Gambling - Low",             col: 2, color: "#3266ad" },
-  { id: "op_low",    label: "Online Piracy - Low",        col: 2, color: "#3266ad" },
-  { id: "nnp_low",   label: "Neg. News: Pharma - Low",    col: 2, color: "#3266ad" },
-  { id: "nnf_low",   label: "Neg. News: Financial - Low", col: 2, color: "#3266ad" },
-  { id: "drug_med",  label: "Drugs/Tobacco - Med",        col: 2, color: "#d4750e" },
-  { id: "adult_med", label: "Adult Content - Med",        col: 2, color: "#d4750e" },
-  { id: "g_med",     label: "Gambling - Med",             col: 2, color: "#d4750e" },
-  { id: "bully_med", label: "Bullying/Harassment - Med",  col: 2, color: "#d4750e" },
-  { id: "crime_med", label: "Crime - Med",                col: 2, color: "#d4750e" },
-  { id: "nnp_med",   label: "Neg. News: Pharma - Med",   col: 2, color: "#d4750e" },
-  { id: "other_med", label: "Other Med Risk",             col: 2, color: "#d4750e" },
-  { id: "high_seg",  label: "High-Risk Flags",            col: 2, color: "#c0392b" },
+  { id: "total_low",  label: "Total Events", col: 0, color: "#3266ad" },
+  { id: "total_med",  label: "Total Events", col: 0, color: "#d4750e" },
+  { id: "total_high", label: "Total Events", col: 0, color: "#c0392b" },
+  { id: "low",        label: "Low Risk",     col: 1, color: "#3266ad" },
+  { id: "med",        label: "Medium Risk",  col: 1, color: "#d4750e" },
+  { id: "high",       label: "High Risk",    col: 1, color: "#c0392b" },
+  { id: "g_low",      label: "Gambling - Low",             col: 2, color: "#3266ad" },
+  { id: "op_low",     label: "Online Piracy - Low",        col: 2, color: "#3266ad" },
+  { id: "nnp_low",    label: "Neg. News: Pharma - Low",    col: 2, color: "#3266ad" },
+  { id: "nnf_low",    label: "Neg. News: Financial - Low", col: 2, color: "#3266ad" },
+  { id: "drug_med",   label: "Drugs/Tobacco - Med",        col: 2, color: "#d4750e" },
+  { id: "adult_med",  label: "Adult Content - Med",        col: 2, color: "#d4750e" },
+  { id: "g_med",      label: "Gambling - Med",             col: 2, color: "#d4750e" },
+  { id: "bully_med",  label: "Bullying/Harassment - Med",  col: 2, color: "#d4750e" },
+  { id: "crime_med",  label: "Crime - Med",                col: 2, color: "#d4750e" },
+  { id: "nnp_med",    label: "Neg. News: Pharma - Med",    col: 2, color: "#d4750e" },
+  { id: "other_med",  label: "Other Med Risk",             col: 2, color: "#d4750e" },
+  { id: "high_seg",   label: "High-Risk Flags",            col: 2, color: "#c0392b" },
 ];
 
 const linksData = [
-  { source: "total", target: "low",  value: 42864 },
-  { source: "total", target: "med",  value: 11277 },
-  { source: "total", target: "high", value: 37 },
-  { source: "low", target: "g_low",   value: 17171 },
-  { source: "low", target: "op_low",  value: 10139 },
-  { source: "low", target: "nnp_low", value: 8007 },
-  { source: "low", target: "nnf_low", value: 7547 },
+  { source: "total_low",  target: "low",  value: 42864 },
+  { source: "total_med",  target: "med",  value: 11277 },
+  { source: "total_high", target: "high", value: 37 },
+  { source: "low", target: "g_low",    value: 17171 },
+  { source: "low", target: "op_low",   value: 10139 },
+  { source: "low", target: "nnp_low",  value: 8007  },
+  { source: "low", target: "nnf_low",  value: 7547  },
   { source: "med", target: "drug_med",  value: 3123 },
   { source: "med", target: "adult_med", value: 2858 },
   { source: "med", target: "g_med",     value: 1010 },
-  { source: "med", target: "bully_med", value: 981 },
-  { source: "med", target: "crime_med", value: 777 },
-  { source: "med", target: "nnp_med",   value: 762 },
+  { source: "med", target: "bully_med", value: 981  },
+  { source: "med", target: "crime_med", value: 777  },
+  { source: "med", target: "nnp_med",   value: 762  },
   { source: "med", target: "other_med", value: 1766 },
-  { source: "high", target: "high_seg", value: 37 },
+  { source: "high", target: "high_seg", value: 37   },
 ];
 
 const TOTAL = 54178;
@@ -139,11 +141,11 @@ function fmt(n) { return n.toLocaleString(); }
 function pct(n) { return ((n / TOTAL) * 100).toFixed(1) + "%"; }
 
 const nodeMap = {};
-nodesData.forEach(n => { nodeMap[n.id] = n; });
-
-nodesData.forEach(n => { n.value = 0; });
+nodesData.forEach(n => { nodeMap[n.id] = n; n.value = 0; });
 linksData.forEach(l => { nodeMap[l.target].value += l.value; });
-nodeMap["total"].value = TOTAL;
+["total_low","total_med","total_high"].forEach(id => {
+  nodeMap[id].value = linksData.filter(l => l.source === id).reduce((s,l) => s+l.value, 0);
+});
 
 const cols = [0, 1, 2];
 const colNodes = cols.map(c => nodesData.filter(n => n.col === c));
@@ -152,9 +154,29 @@ const innerH = HEIGHT - PAD.top - PAD.bottom;
 const colX = [PAD.left, PAD.left + innerW * 0.38, PAD.left + innerW * 0.72];
 const NODE_W = 14;
 const GAP = 6;
+const COL0_GAP = 3;
 
-colNodes.forEach((nodes, ci) => {
-  const totalVal = nodes.reduce((s, n) => s + n.value, 0);
+// Layout col 0 as tight segmented stack
+{
+  const nodes = colNodes[0];
+  const totalVal = nodes.reduce((s,n) => s+n.value, 0);
+  const totalGap = COL0_GAP * (nodes.length - 1);
+  const scale = (innerH - totalGap) / totalVal;
+  let y = PAD.top;
+  nodes.forEach(n => {
+    n.x = colX[0];
+    n.y = y;
+    n.h = Math.max(n.value * scale, 4);
+    y += n.h + COL0_GAP;
+    n.inOffset = 0;
+    n.outOffset = 0;
+  });
+}
+
+// Layout cols 1 and 2
+[1, 2].forEach(ci => {
+  const nodes = colNodes[ci];
+  const totalVal = nodes.reduce((s,n) => s+n.value, 0);
   const totalGap = GAP * (nodes.length - 1);
   const scale = (innerH - totalGap) / totalVal;
   let y = PAD.top;
@@ -202,7 +224,7 @@ function moveTip(event) {
   const svgRect = svgEl.getBoundingClientRect();
   let x = (event.clientX - svgRect.left) / svgRect.width * WIDTH;
   let y = (event.clientY - svgRect.top) / svgRect.height * HEIGHT;
-  const tipW = 200;
+  const tipW = 210;
   const tx = x + 12 + tipW > WIDTH ? x - tipW - 8 : x + 12;
   const ty = y - 10 < 0 ? y + 10 : y - 20;
   tip.style.left = (tx / WIDTH * 100) + "%";
@@ -210,10 +232,10 @@ function moveTip(event) {
 }
 function hideTip() { tip.style.opacity = 0; }
 
+// Links
 svg.selectAll(".link")
   .data(linksData)
   .join("path")
-  .attr("class", "link")
   .attr("d", d => {
     const x0 = d.srcX, x1 = d.tgtX;
     const mx = (x0 + x1) / 2;
@@ -227,18 +249,16 @@ svg.selectAll(".link")
     d3.select(this).attr("opacity", 0.38);
     const src = nodeMap[d.source];
     const tgt = nodeMap[d.target];
-    showTip(event, `<strong>${src.label} → ${tgt.label}</strong><span>${fmt(d.value)} events &nbsp;·&nbsp; ${pct(d.value)}</span>`);
+    const srcLabel = d.source.startsWith("total") ? `Total (${tgt.label})` : src.label;
+    showTip(event, `<strong>${srcLabel} → ${tgt.label}</strong><span>${fmt(d.value)} events · ${pct(d.value)}</span>`);
   })
   .on("mousemove", moveTip)
-  .on("mouseout", function() {
-    d3.select(this).attr("opacity", 0.18);
-    hideTip();
-  });
+  .on("mouseout", function() { d3.select(this).attr("opacity", 0.18); hideTip(); });
 
+// Node rects
 const nodeG = svg.selectAll(".node")
   .data(nodesData)
   .join("g")
-  .attr("class", "node")
   .style("cursor", "pointer");
 
 nodeG.append("rect")
@@ -251,32 +271,56 @@ nodeG.append("rect")
   .attr("opacity", 0.85)
   .on("mouseover", function(event, d) {
     d3.select(this).attr("opacity", 1);
-    showTip(event, `<strong>${d.label}</strong><span>${fmt(d.value)} events &nbsp;·&nbsp; ${pct(d.value)}</span>`);
+    const lbl = d.col === 0
+      ? `Total Events (${["Low","Med","High"][["total_low","total_med","total_high"].indexOf(d.id)]} tier)`
+      : d.label;
+    showTip(event, `<strong>${lbl}</strong><span>${fmt(d.value)} events · ${pct(d.value)}</span>`);
   })
   .on("mousemove", moveTip)
-  .on("mouseout", function() {
-    d3.select(this).attr("opacity", 0.85);
-    hideTip();
-  });
+  .on("mouseout", function() { d3.select(this).attr("opacity", 0.85); hideTip(); });
 
-nodeG.append("text")
-  .attr("x", d => d.x + NODE_W + 6)
-  .attr("y", d => d.y + d.h / 2)
+// Col 0: single shared label centered on the stack
+const col0Mid = (nodeMap["total_low"].y + nodeMap["total_high"].y + nodeMap["total_high"].h) / 2;
+svg.append("text")
+  .attr("x", colX[0] + NODE_W + 6)
+  .attr("y", col0Mid)
   .attr("dominant-baseline", "central")
-  .attr("font-size", d => d.col === 2 ? "10.5" : "11.5")
+  .attr("font-size", "11.5")
   .attr("font-family", "-apple-system, BlinkMacSystemFont, sans-serif")
   .attr("fill", "#1a1a18")
   .attr("opacity", 0.85)
-  .text(d => d.label);
+  .text("Total Events");
 
-nodesData.filter(d => d.col < 2).forEach(d => {
+svg.append("text")
+  .attr("x", colX[0] + NODE_W + 6)
+  .attr("y", col0Mid + 14)
+  .attr("dominant-baseline", "central")
+  .attr("font-size", "10")
+  .attr("font-family", "-apple-system, BlinkMacSystemFont, sans-serif")
+  .attr("fill", "#73726c")
+  .text(fmt(TOTAL) + " · 100%");
+
+// Labels for cols 1 and 2
+nodesData.filter(d => d.col > 0).forEach(d => {
   svg.append("text")
     .attr("x", d.x + NODE_W + 6)
-    .attr("y", d.y + d.h / 2 + 13)
-    .attr("font-size", "10")
+    .attr("y", d.y + d.h / 2)
+    .attr("dominant-baseline", "central")
+    .attr("font-size", d.col === 2 ? "10.5" : "11.5")
     .attr("font-family", "-apple-system, BlinkMacSystemFont, sans-serif")
-    .attr("fill", "#73726c")
-    .text(fmt(d.value) + " · " + pct(d.value));
+    .attr("fill", "#1a1a18")
+    .attr("opacity", 0.85)
+    .text(d.label);
+
+  if (d.col === 1) {
+    svg.append("text")
+      .attr("x", d.x + NODE_W + 6)
+      .attr("y", d.y + d.h / 2 + 13)
+      .attr("font-size", "10")
+      .attr("font-family", "-apple-system, BlinkMacSystemFont, sans-serif")
+      .attr("fill", "#73726c")
+      .text(fmt(d.value) + " · " + pct(d.value));
+  }
 });
 </script>
 </body>
