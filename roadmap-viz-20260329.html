@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HUMAN Verification — You Are Here</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: #1e2433;
+    --accent: #00e5a0;
+    --accent2: #0091ff;
+    --milestone: #ff6b35;
+    --text: #e8eaf0;
+    --text-dim: #5a6278;
+    --text-mid: #8892a4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Grotesk', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  header {
+    padding: 18px 36px 14px;
+    border-bottom: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: auto auto 1fr auto auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    column-gap: 16px;
+    row-gap: 6px;
+  }
+  .logo {
+    height: 16px;
+    width: auto;
+    display: block;
+    flex-shrink: 0;
+    grid-column: 1;
+    grid-row: 1;
+  }
+  header h1 {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .header-hint {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    grid-column: 1 / 3;
+    grid-row: 2;
+  }
+  .header-aspirational {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    grid-column: 5;
+    grid-row: 1 / 3;
+    align-self: center;
+  }
+
+  /* ── MODE TOGGLE ── */
+  .mode-toggle {
+    grid-column: 3;
+    grid-row: 1 / 3;
+    justify-self: center;
+    align-self: center;
+    display: flex;
+    border: 1.5px solid var(--accent);
+    border-radius: 30px;
+    padding: 3px;
+    gap: 2px;
+  }
+  .mode-btn {
+    border: none;
+    background: transparent;
+    color: var(--accent);
+    border-radius: 24px;
+    padding: 7px 18px;
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: inherit;
+    pointer-events: none;
+    transition: background 0.2s, color 0.2s;
+    white-space: nowrap;
+  }
+  .mode-btn.active {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 420px 1fr;
+    height: calc(100vh - 78px);
+    overflow: hidden;
+  }
+
+  /* ── LEFT ── */
+  .roadmap-col {
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .roadmap-col-header {
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 10;
+    padding: 14px 20px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .roadmap-col-header p {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-dim);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .legend {
+    display: flex;
+    gap: 12px;
+    margin-left: auto;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-dim);
+  }
+  .legend-pip { width: 8px; height: 8px; border-radius: 2px; }
+
+  .phases-list {
+    padding: 16px 16px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* ── PHASE CLUSTER ── */
+  .phase-cluster {
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s, opacity 0.3s;
+  }
+  .phase-cluster.status-past     { border-color: rgba(0,229,160,0.2); opacity: 1; }
+  .phase-cluster.status-current  { border-color: rgba(0,145,255,0.45); box-shadow: 0 0 20px rgba(0,145,255,0.08); }
+  .phase-cluster.status-future   { border-color: var(--border); opacity: 0.4; }
+
+  .phase-cluster.status-past   .cluster-phase-label { color: var(--accent); }
+  .phase-cluster.status-current .cluster-phase-label { color: var(--accent2); }
+
+  .phase-cluster.status-past    .item-chip { opacity: 1; }
+  .phase-cluster.status-current .item-chip { border-color: #252c3e; color: var(--text); }
+  .phase-cluster.status-future  .item-chip { opacity: 0.3; }
+
+  .badge-past    { background: rgba(0,229,160,0.15);   color: var(--accent); }
+  .badge-current { background: rgba(0,145,255,0.15);   color: var(--accent2); }
+  .badge-future  { background: rgba(255,255,255,0.05); color: var(--text-dim); }
+
+  .cluster-header {
+    padding: 10px 14px;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .cluster-phase-label {
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    flex-shrink: 0;
+  }
+  .phase-cluster.status-active .cluster-phase-label { color: var(--accent2); }
+  .phase-cluster.status-done   .cluster-phase-label { color: var(--accent); }
+
+  .cluster-title { font-size: 13px; font-weight: 600; flex: 1; min-width: 0; }
+
+  .cluster-status-badge {
+    margin-left: auto;
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    width: 82px;
+    text-align: center;
+  }
+
+  .cluster-body { padding: 10px 12px; background: var(--surface); }
+
+  .chips-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+  }
+
+  .item-chip {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 7px 10px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-mid);
+    transition: opacity 0.3s;
+    min-width: 0;
+  }
+  .item-chip span:last-child {
+    line-height: 1.4;
+  }
+  .chip-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+
+  .dot-targeting   { background: #a78bfa; }
+  .dot-bs          { background: #f87171; }
+  .dot-view        { background: #60a5fa; }
+  .dot-class       { background: #f472b6; }
+  .dot-trueclarity { background: #34d399; }
+
+  .phase-cluster.status-active .item-chip { border-color: #252c3e; color: var(--text); }
+  .phase-cluster.status-upcoming .item-chip { opacity: 0.35; }
+  .phase-cluster.status-done     .item-chip { opacity: 0.5; }
+
+  .phase-cluster.status-past    .chip-dot { background: var(--accent); }
+  .phase-cluster.status-current .chip-dot { background: var(--accent2); }
+  .phase-cluster.status-future  .chip-dot { background: var(--border); }
+
+  /* ── YOU ARE HERE LINE ── */
+  #nowLineFixed {
+    position: fixed;
+    left: 0;
+    width: 420px;
+    height: 1px;
+    pointer-events: none;
+    z-index: 20;
+    background: linear-gradient(90deg, rgba(255,220,80,0.04) 0%, rgba(255,220,80,0.5) 20%, rgba(255,220,80,0.5) 92%, transparent 100%);
+  }
+  #nowLineFixed::after {
+    content: 'YOU ARE HERE';
+    position: absolute;
+    right: 16px;
+    top: -16px;
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    color: rgba(255,220,80,0.55);
+    letter-spacing: 0.12em;
+  }
+
+  /* ── MILESTONE FLAG ── */
+  .milestone-flag {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid rgba(255,107,53,0.25);
+    background: rgba(255,107,53,0.05);
+    border-radius: 8px;
+    padding: 10px 14px;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .milestone-flag.unlocked {
+    border-color: rgba(0,229,160,0.35);
+    background: rgba(0,229,160,0.06);
+  }
+  .milestone-flag.unlocked .ms-diamond {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .milestone-flag.unlocked .ms-title { color: var(--accent); }
+  .milestone-flag.unlocked .ms-badge {
+    background: rgba(0,229,160,0.15);
+    color: var(--accent);
+  }
+  .ms-diamond {
+    width: 11px; height: 11px;
+    border: 2px solid var(--milestone);
+    transform: rotate(45deg);
+    flex-shrink: 0;
+    background: var(--bg);
+    transition: background 0.3s, box-shadow 0.3s;
+  }
+  .ms-text { flex: 1; }
+  .ms-title { font-size: 12px; font-weight: 700; color: var(--milestone); }
+  .ms-sub {
+    font-size: 10px;
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+  .ms-badge {
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(255,107,53,0.15);
+    color: var(--milestone);
+    flex-shrink: 0;
+    transition: background 0.3s;
+    width: 64px;
+    text-align: center;
+  }
+
+  /* ── RIGHT: CAPABILITIES ── */
+  .caps-col {
+    overflow-y: auto;
+    padding: 22px 28px 40px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    transition: background 0.4s;
+  }
+  .caps-header {
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .caps-label {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+  .caps-title {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .caps-title::before {
+    content: 'Phase:';
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.12em;
+    flex-shrink: 0;
+  }
+  .caps-subtitle {
+    font-size: 10px;
+    color: rgba(255,255,255,0.25);
+    font-family: 'DM Mono', monospace;
+    margin-top: 5px;
+  }
+
+  .segments-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .segment-card {
+    border-radius: 10px;
+  }
+  .segment-card.wide { grid-column: span 2; }
+
+  .seg-header {
+    padding: 11px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .seg-icon { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.75; }
+  .seg-icon svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.75; }
+  .seg-name { font-size: 13px; font-weight: 600; }
+  .seg-count {
+    margin-left: auto;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-dim);
+  }
+
+  .seg-body { padding: 10px 16px; min-height: 52px; }
+
+  .seg-sell-to {
+    padding: 7px 16px 9px;
+    border-bottom: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--text-mid);
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .seg-sell-to strong {
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 9px;
+  }
+  .seg-sell-to .sell-none {
+    opacity: 0.45;
+    font-style: italic;
+  }
+
+  .cap-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    animation: fadeUp 0.35s ease both;
+  }
+  .cap-item:last-child { border-bottom: none; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .cap-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; background: var(--accent); }
+  .cap-text { font-size: 12px; line-height: 1.45; color: var(--text-mid); flex: 1; }
+  .cap-text strong { color: var(--text); font-weight: 600; }
+  .cap-phase {
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-dim);
+    padding-top: 4px;
+    flex-shrink: 0;
+  }
+  .empty-state {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-dim);
+    text-align: center;
+    padding: 14px 0;
+    font-style: italic;
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* ── ONBOARDING TOUR ── */
+  .tour-overlay { position: fixed; inset: 0; z-index: 9000; pointer-events: all; }
+  .tour-overlay.hidden { display: none; }
+  .tour-spotlight {
+    position: fixed;
+    border-radius: 8px;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.76);
+    z-index: 9001;
+    pointer-events: none;
+    transition: top 0.32s cubic-bezier(0.4,0,0.2,1), left 0.32s cubic-bezier(0.4,0,0.2,1),
+                width 0.32s cubic-bezier(0.4,0,0.2,1), height 0.32s cubic-bezier(0.4,0,0.2,1);
+  }
+  @keyframes tourPulse {
+    0%, 100% { box-shadow: 0 0 0 9999px rgba(0,0,0,0.76), 0 0 0 2px var(--accent); }
+    50%       { box-shadow: 0 0 0 9999px rgba(0,0,0,0.76), 0 0 0 4px var(--accent); }
+  }
+  .tour-spotlight.pulse { animation: tourPulse 2s ease-in-out infinite; }
+  .tour-card {
+    position: fixed;
+    z-index: 9002;
+    width: 280px;
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 18px 20px 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    transition: top 0.32s cubic-bezier(0.4,0,0.2,1), left 0.32s cubic-bezier(0.4,0,0.2,1);
+  }
+  .tour-card-text { font-size: 13px; color: var(--text-mid); line-height: 1.55; margin-bottom: 16px; }
+  .tour-card-text strong { color: var(--text); }
+  .tour-actions { display: flex; justify-content: space-between; align-items: center; }
+  .tour-dots { display: flex; gap: 5px; align-items: center; }
+  .tour-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); transition: background 0.2s; }
+  .tour-dot.active { background: var(--accent); }
+  .tour-btn-skip {
+    font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.04em;
+    color: var(--text-dim); background: none; border: none; cursor: pointer; padding: 0;
+  }
+  .tour-btn-skip:hover { color: var(--text-mid); }
+  .tour-btn-next {
+    font-size: 11px; font-family: 'DM Mono', monospace; letter-spacing: 0.06em;
+    text-transform: uppercase; font-weight: 500;
+    background: var(--accent); color: var(--bg);
+    border: none; border-radius: 20px; padding: 6px 16px; cursor: pointer;
+  }
+  .tour-btn-next:hover { opacity: 0.85; }
+
+
+  /* ── CARD FLIP ── */
+  .card-flip-wrapper {
+    perspective: 800px;
+  }
+  .card-inner {
+    position: relative;
+    width: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                min-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card-inner.flipped {
+    transform: rotateY(180deg);
+  }
+  .card-front, .card-back {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .card-back {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    transform: rotateY(180deg);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  /* When flipped: collapse the front so only the back determines height,
+     and promote the back into normal flow */
+  .card-inner.flipped .card-front {
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+  }
+  .card-inner.flipped .card-back {
+    position: relative;
+    top: auto; left: auto; right: auto;
+  }
+
+  /* ── SALES BACK CONTENT ── */
+  .sales-section { padding: 10px 16px; }
+  .sales-section + .sales-section { border-top: 1px solid var(--border); }
+  .sales-section-label {
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .sales-sell-line {
+    font-size: 12px;
+    color: var(--text-mid);
+    line-height: 1.45;
+  }
+  .sales-sell-line p { margin: 6px 0 0; }
+  .sales-sell-line ul { margin: 4px 0 0; padding-left: 16px; }
+  .sales-sell-line li { margin: 2px 0; }
+  .sales-sell-line.empty {
+    opacity: 0.45;
+    font-style: italic;
+  }
+  .sales-section-hint {
+    font-size: 12px;
+    color: var(--text-mid);
+    opacity: 0.45;
+    font-style: italic;
+    margin-bottom: 8px;
+    line-height: 1.45;
+  }
+  .blocker-subheading {
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin: 6px 0 4px;
+  }
+  .blocker-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 5px 0;
+    font-size: 12px;
+  }
+  .blocker-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    flex-shrink: 0; margin-top: 5px;
+    background: var(--milestone);
+  }
+  .blocker-text { color: var(--text-mid); flex: 1; line-height: 1.45; }
+  .blocker-text strong { color: var(--text); }
+  .blocker-timing {
+    font-size: 9px;
+    font-family: 'DM Mono', monospace;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .segment-card-inner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+</style>
+  <script src="https://unpkg.com/lucide@0.383.0/dist/umd/lucide.js"></script>
+</head>
+<body>
+
+<header>
+  <img class="logo" src="data:image/png;base64,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" alt="HUMAN Security">
+  <h1>You Are Here — Verification Roadmap</h1>
+  <div class="mode-toggle" onclick="setMode(!salesMode)" style="cursor:pointer;">
+    <button class="mode-btn active" id="modeStandard">Standard Mode</button>
+    <button class="mode-btn" id="modeSales">Sales Mode</button>
+  </div>
+  <span class="header-aspirational">Aspirational Roadmap. (v.20260329)<br>Timeline and prioritization subject to change.</span>
+  <span class="header-hint">⇅ &nbsp;Scroll the roadmap to advance through time</span>
+</header>
+
+<div class="layout">
+  <div class="roadmap-col">
+    <div class="roadmap-col-header">
+      <p>Roadmap phases</p>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-pip" style="background:rgba(0,229,160,0.7)"></div>Done</div>
+        <div class="legend-item"><div class="legend-pip" style="background:rgba(0,145,255,0.7)"></div>In progress</div>
+        <div class="legend-item"><div class="legend-pip" style="background:var(--border)"></div>Upcoming</div>
+      </div>
+    </div>
+    <div class="phases-list" id="phasesList"></div>
+  </div>
+
+  <div class="caps-col" id="capsCol">
+    <div class="caps-header">
+      <div class="caps-label" id="capsLabel">Unlocked Capabilities</div>
+      <div class="caps-title" id="capsTitle">—</div>
+      <div class="caps-subtitle" id="capsSubtitle"></div>
+    </div>
+    <div class="segments-grid" id="segmentsGrid"></div>
+  </div>
+</div>
+
+<script>
+const PHASES = [
+  {
+    id: 'done', label: 'Mar 2026', title: 'Current Capabilities',
+    items: [
+      { cat: 'bs',        label: 'IVT Measurement' },
+      { cat: 'view',      label: 'Core Viewability Measurement (Display & Video)' },
+      { cat: 'bs',        label: 'Core Brand Safety Measurement (Web, English)' },
+      { cat: 'targeting', label: 'IVT Avoidance Targeting (MediaGuard)' },
+      { cat: 'bs',        label: 'Brand Profiles' },
+      { cat: 'trueclarity', label: 'URL-level Transparency' },
+    ],
+    milestone: { id: 'ms-now', label: 'Current State', sub: 'Viewability measurement saleable to platforms' }
+  },
+  {
+    id: 'q1-2026', label: 'Q1 2026', title: 'Targeting Enters the Mix',
+    items: [
+      { cat: 'targeting', label: 'Pre-bid Targeting Implementation' },
+      { cat: 'targeting', label: 'Brand Safety in Targeting' },
+      { cat: 'targeting', label: 'Targeting Integration 1 (Trade Desk)' },
+      { cat: 'class',     label: 'Custom Categorization via AI Agents' },
+      { cat: 'view',      label: 'Unified VAST Gateway' },
+      { cat: 'trueclarity', label: 'Basic Adv/Agency UI' },
+      { cat: 'bs',        label: 'Expanded Brand Safety Reporting' },
+    ],
+    milestone: { id: 'ms-q1', label: 'Targeting Enters the Mix', sub: 'Brand safety targeting saleable — web, English-only' }
+  },
+  {
+    id: 'q2-2026', label: 'Q2 2026', title: 'Publisher & Platform Viability',
+    items: [
+      { cat: 'class',       label: 'App Categorization' },
+      { cat: 'class',       label: 'Domain-level Categorization' },
+      { cat: 'view',        label: 'VPAID Support' },
+      { cat: 'view',        label: 'Expanded Video & Viewability Metrics' },
+      { cat: 'view',        label: 'OM in CTV Viewability Measurement' },
+      { cat: 'targeting',   label: 'Pre-bid Viewability Targeting' },
+      { cat: 'targeting',   label: 'Targeting Integration 2 (SSP)' },
+      { cat: 'class',       label: 'Multilingual Classification' },
+      { cat: 'class',       label: 'Expanded AI Agents' },
+      { cat: 'trueclarity', label: 'Robust Adv/Agency UI' },
+      { cat: 'bs',          label: 'Brand Safety in Dashboards' },
+      { cat: 'view',        label: 'Viewability in Dashboards' },
+      { cat: 'bs',          label: 'Publisher Integration Method' },
+    ],
+    milestone: { id: 'ms-q2', label: 'Publisher & Platform Viability', sub: 'Multilingual verification and expanded video metrics; basic viability achieved' }
+  },
+  {
+    id: 'q3-2026', label: 'Q3 2026', title: 'Broad Viability',
+    items: [
+      { cat: 'targeting',   label: 'Targeting for Publishers (Prebid.js RTD)' },
+      { cat: 'targeting',   label: 'Targeting Integration 3' },
+      { cat: 'trueclarity', label: 'Holistic Impression Conformance Metric' },
+      { cat: 'trueclarity', label: 'Geo Reporting' },
+      { cat: 'view',        label: 'Audibility Measurement' },
+    ],
+    milestone: { id: 'ms-q3', label: 'Broad Viability', sub: 'Publisher targeting, audibility, geo reporting; attention, blocking, and walled gardens remain' }
+  },
+  {
+    id: 'q4-2026', label: 'Q4 2026', title: 'Advertiser & Publisher Depth',
+    items: [
+      { cat: 'bs',          label: 'Classification Explorer' },
+      { cat: 'view',        label: 'Custom Viewability Thresholds' },
+      { cat: 'view',        label: 'Viewability (Native)' },
+      { cat: 'trueclarity', label: 'Geo-compliance Measurement' },
+      { cat: 'trueclarity', label: 'Initial Delivery Blocking' },
+      { cat: 'bs',          label: 'Delivery Blocking Reporting' },
+    ],
+    milestone: { id: 'ms-q4', label: 'Advertiser & Publisher Depth', sub: 'Deeper advertiser capabilities — publishers and platforms fully served' }
+  },
+  {
+    id: 'tbd', label: 'Later / TBD', title: 'Full Parity & More',
+    items: [
+      { cat: 'view',        label: 'Attention Measurement' },
+      { cat: 'targeting',   label: 'Attention Targeting' },
+      { cat: 'view',        label: 'Viewability in Walled Gardens' },
+      { cat: 'bs',          label: 'Brand Safety in Walled Gardens' },
+      { cat: 'class',       label: 'Image Classification' },
+      { cat: 'class',       label: 'Video Classification' },
+      { cat: 'class',       label: 'More Brand Safety Categories' },
+      { cat: 'trueclarity', label: 'Suitability Scoring' },
+      { cat: 'trueclarity', label: 'Out-of-geo Blocking' },
+      { cat: 'bs',          label: 'Brand Safety Explainability' },
+      { cat: 'view',        label: 'CTV Viewability Proxy Metric' },
+      { cat: 'view',        label: 'In-game Viewability Measurement' },
+      { cat: 'trueclarity', label: 'Carbon Metrics' },
+      { cat: 'trueclarity', label: 'Ad Server Workflow Automation' },
+    ],
+    milestone: { id: 'ms-tbd', label: 'Full Parity & More', sub: 'Compelling, differentiated offering for all segments' }
+  },
+];
+
+const MILESTONE_CAPS = {
+  'ms-now': {
+    title: 'Current State', subtitle: 'As of March 2026',
+    segments: {
+      advertiser: { salesView: { sellLine: "<strong>Select design partners willing to POC a limited solution.</strong><p>Verification capabilities are limited to:<ul><li>Existing IVT measurement</li><li>Display ads only (no video)</li><li>Brand safety measurement — web, English only; limited coverage and reporting</li><li>Basic viewability measurement</li></ul><p>No targeting capabilities or integrations yet.</p>" }, saleableTo: 'Basic verification POCs — IVT, display only, brand safety (web/EN only, limited), viewability; no targeting yet', caps: [
+        { id: 'ivt-meas',    text: '<strong>IVT measurement</strong>', cat: 'bs', phase: 'Now' },
+        { id: 'core-view',   text: '<strong>Core viewability measurement</strong> — display & video', cat: 'view', phase: 'Now' },
+        { id: 'core-bs',     text: '<strong>Core brand safety measurement</strong> — web, English only', cat: 'bs', phase: 'Now' },
+        { id: 'brand-prof',  text: '<strong>Brand profiles</strong> — define brand safety violation criteria', cat: 'bs', phase: 'Now' },
+        { id: 'url-transp',  text: '<strong>URL-level transparency</strong> — granular inventory visibility', cat: 'trueclarity', phase: 'Now' },
+      ]},
+      dsp: { salesView: { sellLine: "<strong>Select design partners willing to do a POC of a limited solution.</strong><p>Measurement capabilities are limited to:<ul><li>Existing IVT measurement</li><li>Display ads only (no video)</li><li>Brand safety measurement — web, English only; limited coverage and reporting</li><li>Basic viewability measurement</li></ul><p>Brand safety measurement has limited DSP applicability; viewability measurement useful as a supply quality signal.</p>", integrateLine: "<strong>Targeting integration discussions open with select candidates.</strong><p>Goal: pre-bid targeting integrated with:<ul><li>All major DSPs — to serve advertisers</li></ul></p>" }, saleableTo: 'Viewability and brand safety measurement add-on POCs for existing DSP customers; brand safety web/EN only, limited DSP applicability; display only', integrateWith: 'Targeting integration discussions — select candidates only', caps: [
+        { id: 'ivt-meas',    text: '<strong>IVT measurement</strong>', cat: 'bs', phase: 'Now' },
+        { id: 'core-view',   text: '<strong>Core viewability measurement</strong> — display & video', cat: 'view', phase: 'Now' },
+        { id: 'core-bs',     text: '<strong>Core brand safety measurement</strong> — web, English only', cat: 'bs', phase: 'Now' },
+        { id: 'brand-prof',  text: '<strong>Brand profiles</strong> — define brand safety violation criteria', cat: 'bs', phase: 'Now' },
+        { id: 'url-transp',  text: '<strong>URL-level transparency</strong> — granular inventory visibility', cat: 'trueclarity', phase: 'Now' },
+        { id: 'ivt-avoid',   text: '<strong>IVT avoidance targeting</strong> — via MediaGuard', cat: 'targeting', phase: 'Now' },
+      ]},
+      ssp: { salesView: { sellLine: "<strong>Select design partners willing to do a POC of a limited solution.</strong><p>Measurement capabilities are limited to:<ul><li>Existing IVT measurement</li><li>Display ads only (no video)</li><li>Brand safety measurement — web, English only; limited coverage and reporting</li><li>Basic viewability measurement</li></ul><p>Brand safety measurement has limited SSP applicability; viewability measurement useful as a supply quality signal.</p>", integrateLine: "<strong>Targeting integration discussions open with select candidates.</strong><p>Goal: pre-bid targeting integrated with:<ul><li>All major curation-supporting SSPs — to serve curators</li></ul></p>" }, saleableTo: 'Viewability and brand safety measurement add-on POCs for existing SSP customers; brand safety web/EN only, limited SSP applicability; display only', integrateWith: 'Targeting integration discussions — select candidates only', caps: [
+        { id: 'ivt-meas',    text: '<strong>IVT measurement</strong>', cat: 'bs', phase: 'Now' },
+        { id: 'core-view',   text: '<strong>Core viewability measurement</strong> — display & video', cat: 'view', phase: 'Now' },
+        { id: 'core-bs',     text: '<strong>Core brand safety measurement</strong> — web, English only', cat: 'bs', phase: 'Now' },
+        { id: 'brand-prof',  text: '<strong>Brand profiles</strong> — define brand safety violation criteria', cat: 'bs', phase: 'Now' },
+        { id: 'url-transp',  text: '<strong>URL-level transparency</strong> — granular inventory visibility', cat: 'trueclarity', phase: 'Now' },
+        { id: 'ivt-avoid',   text: '<strong>IVT avoidance targeting</strong> — via MediaGuard', cat: 'targeting', phase: 'Now' },
+      ]},
+      publisher: { salesView: { sellLine: "Not yet — publisher integration method not yet available" }, saleableTo: 'Not yet — publisher integration method not yet available', caps: [] },
+      curator:   { salesView: { sellLine: "Not yet — SSP targeting integration required first" }, saleableTo: 'Not yet — SSP targeting integration required first', caps: [] },
+    }
+  },
+  'ms-q1': {
+    title: 'Targeting Enters the Mix', subtitle: 'End of Q1 2026',
+    segments: {
+      advertiser: { salesView: { sellLine: "<strong>Select advertisers with modest verification or early targeting needs.</strong><p>Verification capabilities include:<ul><li>IVT measurement</li><li>Display and video</li><li>Brand safety measurement — web, English only; limited coverage and reporting</li><li>Viewability measurement</li></ul><p>First targeting capability: pre-bid brand safety targeting — web, English only, via TTD.</p>" }, saleableTo: 'Basic verification for select advertisers — IVT, display + video, brand safety (web/EN only), viewability; first targeting: pre-bid brand safety, web/EN only (TTD)', caps: [
+        { id: 'prebid-tgt',  text: '<strong>Pre-bid brand safety targeting</strong> — in DSP integration 1, TTD — web, English', cat: 'targeting', phase: 'Q1', keyBlocker: 'sales' },
+        { id: 'basic-ui',    text: '<strong>Basic Adv/Agency UI</strong> — multi-platform campaign-centric view & self-serve tag generation', cat: 'trueclarity', phase: 'Q1' },
+        { id: 'ai-agents',   text: '<strong>Custom AI categorization via AI agents</strong> — bespoke brand safety classification', cat: 'class', keyBlocker: 'sales', phase: 'Q1' },
+        { id: 'bs-reporting',text: '<strong>Expanded brand safety reporting</strong> — richer metrics & dashboards', cat: 'bs', phase: 'Q1' },
+        { id: 'vast-tags',   text: '<strong>Unified VAST video tags</strong> — foundational requirement for adv/agency video measurement of any sort', cat: 'view', phase: 'Q1' },
+      ]},
+      dsp: { salesView: { sellLine: "<strong>DSPs with basic measurement needs or interest in pre-bid targeting integration.</strong><p>Measurement capabilities include:<ul><li>Existing IVT measurement</li><li>Display and video</li><li>Brand safety measurement — web, English only; limited DSP applicability</li><li>Viewability measurement — useful as a supply quality signal</li></ul>", integrateLine: "<strong>Pre-bid brand safety targeting integration now live — TTD integrated, pursuing additional DSPs.</strong><p>Goal: pre-bid targeting integrated with:<ul><li>All major DSPs — to serve advertisers</li></ul></p>" }, saleableTo: 'Viewability and brand safety measurement for DSPs with basic needs; brand safety web/EN only, limited DSP applicability', integrateWith: 'Pursue targeting integrations', caps: [
+        { id: 'prebid-tgt',  text: '<strong>Pre-bid brand safety targeting</strong> integration — web, English-only', cat: 'targeting', phase: 'Q1', keyBlocker: 'integration' },
+        { id: 'ai-agents',   text: '<strong>Custom AI categorization via AI agents</strong> — bespoke brand safety classification', cat: 'class', phase: 'Q1' },
+        { id: 'bs-reporting',text: '<strong>Expanded brand safety reporting</strong> — richer metrics & dashboards', cat: 'bs', phase: 'Q1' },
+        { id: 'vast-integ',  text: '<strong>Unified VAST integration</strong> — foundational requirement for "beyond 1x1" video measurement — brand safety, viewability, improved IVT', cat: 'view', phase: 'Q1' },
+      ]},
+      ssp: { salesView: { sellLine: "<strong>SSPs with basic measurement needs or interest in pre-bid targeting integration.</strong><p>Measurement capabilities include:<ul><li>Existing IVT measurement</li><li>Display and video</li><li>Brand safety measurement — web, English only; limited SSP applicability</li><li>Viewability measurement — useful as a supply quality signal</li></ul>", integrateLine: "<strong>Pre-bid brand safety targeting integration available — actively pursuing curation-supporting SSP integrations.</strong><p>Goal: pre-bid targeting integrated with:<ul><li>Curation-supporting SSPs — to enable curator targeting demand</li></ul></p>" }, saleableTo: 'Viewability and brand safety measurement for SSPs with basic needs; brand safety web/EN only, limited SSP applicability', integrateWith: 'Pursue targeting integrations', caps: [
+        { id: 'prebid-tgt',  text: '<strong>Pre-bid brand safety targeting</strong> integration — web, English-only', cat: 'targeting', phase: 'Q1', keyBlocker: 'integration' },
+        { id: 'ai-agents',   text: '<strong>Custom AI categorization via AI agents</strong> — bespoke brand safety classification', cat: 'class', phase: 'Q1' },
+        { id: 'bs-reporting',text: '<strong>Expanded brand safety reporting</strong> — richer metrics & dashboards', cat: 'bs', phase: 'Q1' },
+        { id: 'vast-integ',  text: '<strong>Unified VAST integration</strong> — foundational requirement for "beyond 1x1" video measurement — brand safety, viewability, improved IVT', cat: 'view', phase: 'Q1' },
+      ]},
+      publisher: { salesView: { sellLine: "Not yet — publisher integration method still required" }, saleableTo: 'Not yet — publisher integration method still required', caps: [] },
+      curator:   { salesView: { sellLine: "Not yet — SSP integrations required" }, saleableTo: 'Not yet — SSP integrations required', caps: [] },
+    }
+  },
+  'ms-q2': {
+    title: 'Publisher & Platform Viability', subtitle: 'End of Q2 2026',
+    segments: {
+      advertiser: { salesView: { sellLine: "<strong>Advertisers with typical open web needs — measurement-based verification sufficient; comprehensive targeting broadly viable.</strong><p>Verification capabilities include:<ul><li>IVT measurement</li><li>Display and video (including VPAID)</li><li>Brand safety measurement — web + app, multilingual</li><li>Viewability measurement</li></ul><p>Targeting:<ul><li>Pre-bid brand safety targeting (TTD + curator deals), multilingual</li><li>Pre-bid viewability targeting</li></ul>" }, saleableTo: 'Verification for advertisers with typical needs — IVT, display + video, brand safety (web + app, multilingual), viewability; targeting: pre-bid brand safety (TTD + curator deals, multilingual) and viewability',
+        overrides: {
+          'core-view':  { text: '<strong>Expanded viewability measurement</strong> — display & video', cat: 'view' },
+          'core-bs':    { text: '<strong>Comprehensive brand safety measurement</strong> — web + app, multilingual', cat: 'bs' },
+          'prebid-tgt': { text: '<strong>Pre-bid brand safety targeting</strong> — in TTD, or via curator deals on first SSP integration, multilingual', cat: 'targeting' },
+          'basic-ui':   { text: '<strong>Robust Adv/Agency UI</strong> — multi-platform campaign-centric view & self-serve tag generation', cat: 'trueclarity' },
+        },
+        caps: [
+        { id: 'view-tgt',   text: '<strong>Pre-bid viewability targeting</strong> — in TTD, or via curator deals on first SSP integration', cat: 'targeting', phase: 'Q2', keyBlocker: 'sales' },
+        { text: '<strong>App categorization</strong> — mobile app inventory coverage', cat: 'class', phase: 'Q2', keyBlocker: 'sales' },
+        { text: '<strong>VPAID support</strong> — video ad measurement expanded', cat: 'view', phase: 'Q2' },
+        { text: '<strong>Brand safety in dashboards</strong> — detailed threat intelligence and violations breakdown', cat: 'bs', phase: 'Q2' },
+        { text: '<strong>Viewability in dashboards</strong> — detailed performance and compliance breakdown', cat: 'view', phase: 'Q2' },
+        { text: '<strong>Multilingual brand safety</strong> — across measurement and targeting', cat: 'class', phase: 'Q2', keyBlocker: 'sales', salesOnly: true },
+        { text: '<strong>Expanded AI agents</strong> — new agent types such as context and persona', cat: 'class', phase: 'Q2' },
+        { text: '<strong>Expanded video & viewability metrics</strong> — quartiles, viewable at quartiles, AVOC', cat: 'view', phase: 'Q2' },
+        { text: '<strong>OM in CTV viewability measurement</strong> — Open Measurement for CTV environments', cat: 'view', phase: 'Q2' },
+      ]},
+      dsp: { salesView: { sellLine: "<strong>DSPs with typical measurement needs — add-ons now viable for a broader range of customers.</strong><p>Measurement capabilities include:<ul><li>Existing IVT measurement</li><li>Display and video</li><li>Brand safety measurement — web + app, multilingual; limited DSP applicability</li><li>Viewability measurement — useful as a supply quality signal</li><li>Unsafe domains list — platform-wide avoidance of high-risk domains</li></ul>", integrateLine: "<strong>Targeting integrations expanding — multilingual brand safety and viewability now available; pursuing additional DSP coverage.</strong><p>Goal: pre-bid targeting integrated with:<ul><li>All major DSPs — to serve advertisers</li></ul></p>" }, saleableTo: 'Viewability and brand safety measurement (web + app, multilingual), for DSPs with typical needs; limited demand for brand safety measurement expected; unsafe domain list for platform-wide avoidance of high-risk domains', integrateWith: 'Targeting integrations expanding; multilingual brand safety and viewability now available; pursuing additional DSP coverage',
+        overrides: {
+          'core-view':  { text: '<strong>Expanded viewability measurement</strong> — display & video', cat: 'view' },
+          'core-bs':    { text: '<strong>Comprehensive brand safety measurement</strong> — web + app, multilingual', cat: 'bs' },
+          'prebid-tgt': { text: '<strong>Pre-bid brand safety targeting</strong> integration — web + app, multilingual', cat: 'targeting' },
+        },
+        caps: [
+        { id: 'view-tgt',   text: '<strong>Pre-bid viewability targeting</strong> integration — minor improvement, existing brand safety integration', cat: 'targeting', phase: 'Q2' },
+        { text: '<strong>App categorization</strong> — mobile app inventory coverage', cat: 'class', phase: 'Q2', keyBlocker: 'both' },
+        { text: '<strong>Unsafe domains list</strong> — for onboarding checks or platform-wide avoidance of high risk domains', cat: 'class', phase: 'Q2' },
+        { text: '<strong>Brand safety in dashboards</strong> — detailed threat intelligence and violations breakdown', cat: 'bs', phase: 'Q2' },
+        { text: '<strong>Viewability in dashboards</strong> — detailed performance and compliance breakdown', cat: 'view', phase: 'Q2' },
+        { text: '<strong>Multilingual brand safety</strong> — across measurement and targeting', cat: 'class', phase: 'Q2', keyBlocker: 'both', salesOnly: true },
+        { text: '<strong>Expanded AI agents</strong> — new agent types such as context and persona', cat: 'class', phase: 'Q2' },
+        { text: '<strong>Expanded video & viewability metrics</strong> — quartiles, viewable at quartiles, AVOC', cat: 'view', phase: 'Q2' },
+        { text: '<strong>OM in CTV viewability measurement</strong> — Open Measurement for CTV environments', cat: 'view', phase: 'Q2' },
+      ]},
+      ssp: { salesView: { sellLine: "<strong>SSPs with typical measurement needs — add-ons now viable for a broader range of customers.</strong><p>Measurement capabilities include:<ul><li>Existing IVT measurement</li><li>Display and video</li><li>Brand safety measurement — web + app, multilingual; limited SSP applicability</li><li>Viewability measurement — useful as a supply quality signal</li><li>Unsafe domains list — platform-wide avoidance of high-risk domains</li></ul>", integrateLine: "<strong>Targeting integrations expanding — multilingual brand safety and viewability now available; pursuing additional SSP coverage.</strong><p>Goal: pre-bid targeting integrated with:<ul><li>Curation-supporting SSPs — to enable curator targeting demand</li></ul></p>" }, saleableTo: 'Viewability and brand safety measurement (web + app, multilingual), for SSPs with typical needs; limited demand for brand safety measurement expected; unsafe domain list for platform-wide avoidance of high-risk domains', integrateWith: 'Targeting integrations expanding; multilingual brand safety and viewability now available; pursuing additional SSP coverage',
+        overrides: {
+          'core-view':  { text: '<strong>Expanded viewability measurement</strong> — display & video', cat: 'view' },
+          'core-bs':    { text: '<strong>Comprehensive brand safety measurement</strong> — web + app, multilingual', cat: 'bs' },
+          'prebid-tgt': { text: '<strong>Pre-bid brand safety targeting</strong> integration — web + app, multilingual', cat: 'targeting' },
+        },
+        caps: [
+        { id: 'view-tgt',   text: '<strong>Pre-bid viewability targeting</strong> integration — minor improvement, existing brand safety integration', cat: 'targeting', phase: 'Q2' },
+        { text: '<strong>App categorization</strong> — mobile app inventory coverage', cat: 'class', phase: 'Q2', keyBlocker: 'both' },
+        { text: '<strong>Unsafe domains list</strong> — for onboarding checks or platform-wide avoidance of high risk domains', cat: 'class', phase: 'Q2' },
+        { text: '<strong>Brand safety in dashboards</strong> — detailed threat intelligence and violations breakdown', cat: 'bs', phase: 'Q2' },
+        { text: '<strong>Viewability in dashboards</strong> — detailed performance and compliance breakdown', cat: 'view', phase: 'Q2' },
+        { text: '<strong>Multilingual brand safety</strong> — across measurement and targeting', cat: 'class', phase: 'Q2', keyBlocker: 'both', salesOnly: true },
+        { text: '<strong>Expanded AI agents</strong> — new agent types such as context and persona', cat: 'class', phase: 'Q2' },
+        { text: '<strong>Expanded video & viewability metrics</strong> — quartiles, viewable at quartiles, AVOC', cat: 'view', phase: 'Q2' },
+        { text: '<strong>OM in CTV viewability measurement</strong> — Open Measurement for CTV environments', cat: 'view', phase: 'Q2' },
+      ]},
+      publisher: { salesView: { sellLine: "<strong>Publishers with multilingual inventory seeking basic viewability and brand safety measurement.</strong><p>Measurement capabilities include:<ul><li>IVT measurement</li><li>Display and video</li><li>Brand safety measurement — web + app, multilingual</li><li>Viewability measurement</li></ul><p>No targeting capabilities yet.</p>" }, saleableTo: 'Publisher integration for measurement now possible; basic verification — viewability measurement, brand safety measurement (multilingual)',
+        caps: [
+        { id: 'ivt-meas',      text: '<strong>IVT measurement</strong>', cat: 'bs', phase: 'Q2' },
+        { id: 'core-view',     text: '<strong>Expanded viewability measurement</strong> — display & video', cat: 'view', phase: 'Q2' },
+        { id: 'core-bs',       text: '<strong>Comprehensive brand safety measurement</strong> — web + app, multilingual', cat: 'bs', phase: 'Q2' },
+        { id: 'brand-prof',    text: '<strong>Brand profiles</strong> — define brand safety violation criteria', cat: 'bs', phase: 'Q2' },
+        { id: 'url-transp',    text: '<strong>URL-level transparency</strong> — granular inventory visibility', cat: 'trueclarity', phase: 'Q2' },
+        { id: 'ai-agents',     text: '<strong>Custom AI categorization via AI agents</strong> — bespoke brand safety classification', cat: 'class', phase: 'Q2' },
+        { id: 'bs-reporting',  text: '<strong>Expanded brand safety reporting</strong> — richer metrics & dashboards', cat: 'bs', phase: 'Q2' },
+        { id: 'view-tgt',      text: '<strong>Viewability targeting</strong> — in publisher ad server', cat: 'targeting', phase: 'Q2' },
+        { text: '<strong>Publisher integration method</strong> — measurement now technically viable', cat: 'bs', phase: 'Q2', keyBlocker: 'sales' },
+        { id: 'app-cat',       text: '<strong>App categorization</strong> — mobile app inventory coverage', cat: 'class', phase: 'Q2' },
+        { id: 'bs-dashboards', text: '<strong>Brand safety in dashboards</strong> — detailed threat intelligence and violations breakdown', cat: 'bs', phase: 'Q2' },
+        { id: 'view-dashboards',text: '<strong>Viewability in dashboards</strong> — detailed performance and compliance breakdown', cat: 'view', phase: 'Q2' },
+        { text: '<strong>Multilingual brand safety</strong> — across measurement and targeting', cat: 'class', phase: 'Q2', salesOnly: true },
+        { text: '<strong>Expanded AI agents</strong> — custom classification for inventory quality', cat: 'class', phase: 'Q2' },
+        { text: '<strong>Expanded video & viewability metrics</strong> — quartiles, viewable at quartiles, AVOC', cat: 'view', phase: 'Q2' },
+        { text: '<strong>OM in CTV viewability measurement</strong> — Open Measurement for CTV environments', cat: 'view', phase: 'Q2' },
+      ]},
+      curator: { salesView: { sellLine: "<strong>Curators with typical brand safety or viewability targeting needs — first targeting capabilities now available.</strong><p>Targeting capabilities include:<ul><li>Pre-bid brand safety targeting — in curator's SSP, web + app, multilingual</li><li>Pre-bid viewability targeting — in curator's SSP</li><li>Unsafe domains list — avoidance of high-risk domains</li></ul>" }, saleableTo: 'Both brand safety and viewability targeting now available for curators with typical needs (multilingual brand safety); unsafe domain list for avoidance of high-risk domains',
+        caps: [
+        { text: '<strong>Pre-bid brand safety targeting</strong> — in curator\'s SSP', cat: 'targeting', phase: 'Q2', keyBlocker: 'sales' },
+        { text: '<strong>Pre-bid viewability targeting</strong> — in curator\'s SSP', cat: 'targeting', phase: 'Q2', keyBlocker: 'sales' },
+        { id: 'ai-agents',      text: '<strong>Custom AI categorization via AI agents</strong> — bespoke brand safety classification', cat: 'class', phase: 'Q2' },
+        { id: 'app-cat',        text: '<strong>App categorization</strong> — mobile app inventory coverage', cat: 'class', phase: 'Q2', keyBlocker: 'sales' },
+        { id: 'bs-domain-lists',text: '<strong>Unsafe domains list</strong> — for avoidance of high risk domains', cat: 'class', phase: 'Q2' },
+      ]},
+    }
+  },
+  'ms-q3': {
+    title: 'Broad Viability', subtitle: 'End of Q3 2026',
+    segments: {
+      advertiser: { salesView: { sellLine: "<strong>Most advertisers — verification meets typical needs; audibility and geo reporting add depth.</strong><p>Verification capabilities include:<ul><li>IVT measurement</li><li>Display and video, quartiles, AVOC</li><li>Brand safety measurement — web + app, multilingual</li><li>Viewability and audibility measurement</li></ul><p>Targeting:<ul><li>Pre-bid brand safety targeting (TTD + curator deals), multilingual</li><li>Pre-bid viewability targeting</li></ul>" }, saleableTo: 'Verification meets typical needs (excl. walled gardens, delivery blocking); audibility and geo reporting add depth',
+        caps: [
+        { text: '<strong>Holistic impression metric</strong> — viewable + non-IVT + brand-safe + in-geo', cat: 'trueclarity', phase: 'Q3' },
+        { text: '<strong>Geo reporting</strong> — geographic delivery breakdown', cat: 'trueclarity', phase: 'Q3' },
+        { text: '<strong>Audibility measurement</strong> — like viewability, but for audio', cat: 'view', phase: 'Q3' },
+      ]},
+      dsp: { salesView: { sellLine: "<strong>Most DSPs — additional targeting integrations expanding coverage.</strong><p>Measurement capabilities include:<ul><li>Existing IVT measurement</li><li>Display and video</li><li>Brand safety measurement — web + app, multilingual; limited DSP applicability</li><li>Viewability measurement — useful as a supply quality signal</li><li>Unsafe domains list — platform-wide avoidance of high-risk domains</li></ul>", integrateLine: "<strong>Targeting integrations continuing to expand — pursuing additional DSP coverage.</strong><p>Goal: pre-bid targeting integrated with:<ul><li>All major DSPs — to serve advertisers</li></ul></p>" }, saleableTo: 'Continued expansion — additional targeting integrations, audibility, geo reporting', integrateWith: 'Targeting integrations continuing to expand; pursuing additional DSP coverage',
+        caps: [
+        { text: '<strong>Holistic impression metric</strong> — viewable + non-IVT + brand-safe + in-geo', cat: 'trueclarity', phase: 'Q3' },
+        { text: '<strong>Geo reporting</strong> — geographic delivery breakdown', cat: 'trueclarity', phase: 'Q3' },
+        { text: '<strong>Audibility measurement</strong> — like viewability, but for audio', cat: 'view', phase: 'Q3' },
+        { text: '<strong>Targeting Integration 3</strong> — expanded DSP coverage', cat: 'targeting', phase: 'Q3' },
+      ]},
+      ssp: { salesView: { sellLine: "<strong>Most SSPs — audibility and geo reporting add depth; targeting integrations continuing to expand.</strong><p>Measurement capabilities include:<ul><li>Existing IVT measurement</li><li>Display and video</li><li>Brand safety measurement — web + app, multilingual; limited SSP applicability</li><li>Viewability measurement — useful as a supply quality signal</li><li>Unsafe domains list — platform-wide avoidance of high-risk domains</li></ul>", integrateLine: "<strong>Targeting integrations continuing to expand — pursuing additional SSP coverage.</strong><p>Goal: pre-bid targeting integrated with:<ul><li>Curation-supporting SSPs — to enable curator targeting demand</li></ul></p>" }, saleableTo: 'Continued expansion — audibility, geo reporting; targeting integrations expanding', integrateWith: 'Targeting integrations continuing to expand; pursuing additional SSP coverage',
+        caps: [
+        { text: '<strong>Holistic impression metric</strong> — viewable + non-IVT + brand-safe + in-geo', cat: 'trueclarity', phase: 'Q3' },
+        { text: '<strong>Geo reporting</strong> — geographic delivery breakdown', cat: 'trueclarity', phase: 'Q3' },
+        { text: '<strong>Audibility measurement</strong> — like viewability, but for audio', cat: 'view', phase: 'Q3' },
+      ]},
+      publisher: { salesView: { sellLine: "<strong>Most publishers — targeting now available; audibility adds measurement depth.</strong><p>Measurement capabilities include:<ul><li>IVT measurement</li><li>Display and video</li><li>Brand safety measurement — web + app, multilingual</li><li>Viewability and audibility measurement</li></ul><p>Targeting:<ul><li>Viewability targeting — in publisher ad server</li><li>Brand safety targeting — in publisher ad server</li></ul>" }, saleableTo: 'Most publishers — targeting now available (viewability + brand safety in publisher ad server); audibility adds measurement depth',
+        caps: [
+        { text: '<strong>Brand safety targeting</strong> — in publisher ad server/prebid.js RTD', cat: 'targeting', phase: 'Q3' },
+        { text: '<strong>Audibility measurement</strong> — like viewability, but for audio', cat: 'view', phase: 'Q3' },
+      ]},
+      curator: { salesView: { sellLine: "<strong>Most curators — web + app multilingual brand safety and viewability targeting, with growing SSP coverage.</strong><p>Targeting capabilities include:<ul><li>Pre-bid brand safety targeting — in curator's SSP, web + app, multilingual</li><li>Pre-bid viewability targeting — in curator's SSP</li><li>Unsafe domains list — avoidance of high-risk domains</li></ul>" }, saleableTo: 'Most curators — multilingual brand safety and viewability targeting in SSP; growing SSP coverage', caps: [
+      ]},
+    }
+  },
+  'ms-q4': {
+    title: 'Advertiser & Publisher Depth', subtitle: 'End of Q4 2026',
+    segments: {
+      advertiser: { salesView: { sellLine: "<strong>All advertisers and agencies with typical open web needs (minus attention).</strong><p>Verification capabilities include:<ul><li>IVT measurement</li><li>Display, video and native</li><li>Brand safety measurement — web + app, multilingual</li><li>Viewability measurement</li><li>Geo-compliance measurement</li><li>Basic delivery blocking and reporting</li></ul><p>Targeting:<ul><li>Pre-bid brand safety targeting (TTD + curator deals), multilingual</li><li>Pre-bid viewability targeting</li></ul>" }, saleableTo: 'All advertisers (excl. attention, walled gardens) — IVT, display/video/native, brand safety (web + app, multilingual), viewability, geo-compliance, delivery blocking; targeting: pre-bid brand safety (multilingual) and viewability',
+        overrides: {
+          'core-view': { text: '<strong>Comprehensive viewability measurement</strong> — display, video and native', cat: 'view' },
+        },
+        caps: [
+        { text: '<strong>Initial delivery blocking</strong> — block non-compliant impressions pre-delivery', cat: 'trueclarity', phase: 'Q4', keyBlocker: 'sales' },
+        { text: '<strong>Delivery blocking reporting</strong> — understand the impact of delivery blocking', cat: 'bs', phase: 'Q4', keyBlocker: 'sales' },
+        { text: '<strong>Geo-compliance measurement</strong> — identify when media vendors are running out-of-geo', cat: 'trueclarity', phase: 'Q4' },
+        { text: '<strong>Custom viewability thresholds</strong> — user-defined criteria beyond IAB/MRC, GroupM, and PMX standards', cat: 'view', phase: 'Q4' },
+        { text: '<strong>Classification explorer</strong> — review classifications to understand impact', cat: 'bs', phase: 'Q4' },
+      ]},
+      dsp: { salesView: { sellLine: "<strong>All DSPs with typical measurement needs — multilingual brand safety and viewability measurement add-ons.</strong><p>Measurement capabilities include:<ul><li>Existing IVT measurement</li><li>Display, video and native</li><li>Brand safety measurement — web + app, multilingual; limited DSP applicability</li><li>Viewability measurement — useful as a supply quality signal</li><li>Unsafe domains list — platform-wide avoidance of high-risk domains</li></ul>", integrateLine: "<strong>Targeting integrations at scale — pursuing full coverage across all major DSPs.</strong><p>Goal: pre-bid targeting integrated with:<ul><li>All major DSPs — to serve advertisers</li></ul></p>" }, saleableTo: 'Viewability and brand safety measurement (web + app, multilingual, limited DSP applicability) for all DSPs; unsafe domain list for platform-wide avoidance of high-risk domains', integrateWith: 'Targeting integrations at scale; pursuing full coverage across all major DSPs',
+        overrides: {
+          'core-view': { text: '<strong>Comprehensive viewability measurement</strong> — display, video and native', cat: 'view' },
+        },
+        caps: [
+        { text: '<strong>Custom viewability thresholds</strong> — user-defined criteria beyond IAB/MRC, GroupM, and PMX standards', cat: 'view', phase: 'Q4' },
+        { text: '<strong>Classification explorer</strong> — review classifications to understand impact', cat: 'bs', phase: 'Q4' },
+      ]},
+      ssp: { salesView: { sellLine: "<strong>All SSPs with typical measurement needs — multilingual brand safety and viewability measurement add-ons.</strong><p>Measurement capabilities include:<ul><li>Existing IVT measurement</li><li>Display, video and native</li><li>Brand safety measurement — web + app, multilingual; limited SSP applicability</li><li>Viewability measurement — useful as a supply quality signal</li><li>Unsafe domains list — platform-wide avoidance of high-risk domains</li></ul>", integrateLine: "<strong>Targeting integrations at scale — pursuing full coverage across all major curation-supporting SSPs.</strong><p>Goal: pre-bid targeting integrated with:<ul><li>Curation-supporting SSPs — to enable curator targeting demand</li></ul></p>" }, saleableTo: 'Viewability and brand safety measurement (web + app, multilingual, limited SSP applicability) for all SSPs; unsafe domain list for platform-wide avoidance of high-risk domains', integrateWith: 'Targeting integrations at scale; pursuing full coverage across all major curation-supporting SSPs',
+        overrides: {
+          'core-view': { text: '<strong>Comprehensive viewability measurement</strong> — display, video and native', cat: 'view' },
+        },
+        caps: [
+        { text: '<strong>Custom viewability thresholds</strong> — user-defined criteria beyond IAB/MRC, GroupM, and PMX standards', cat: 'view', phase: 'Q4' },
+        { text: '<strong>Classification explorer</strong> — review classifications to understand impact', cat: 'bs', phase: 'Q4' },
+      ]},
+      publisher: { salesView: { sellLine: "<strong>All publishers with typical needs (minus attention).</strong><p>Measurement capabilities include:<ul><li>IVT measurement</li><li>Display, video and native</li><li>Brand safety measurement — web + app, multilingual</li><li>Viewability measurement</li></ul><p>Targeting:<ul><li>Viewability targeting — in publisher ad server</li><li>Brand safety targeting — in publisher ad server</li></ul>" }, saleableTo: 'All publishers (excl. attention) — IVT, display/video/native, brand safety (web + app, multilingual), viewability; targeting: viewability + brand safety in publisher ad server',
+        overrides: {
+          'core-view': { text: '<strong>Comprehensive viewability measurement</strong> — display, video and native', cat: 'view' },
+        },
+        caps: [
+        { text: '<strong>Custom viewability thresholds</strong> — user-defined criteria beyond IAB/MRC, GroupM, and PMX standards', cat: 'view', phase: 'Q4' },
+        { text: '<strong>Classification explorer</strong> — review classifications to understand impact', cat: 'bs', phase: 'Q4' },
+      ]},
+      curator: { salesView: { sellLine: "<strong>All curators — comprehensive brand safety and viewability targeting, multilingual.</strong><p>Targeting capabilities include:<ul><li>Pre-bid brand safety targeting — in curator's SSP, web + app, multilingual</li><li>Pre-bid viewability targeting — in curator's SSP</li><li>Unsafe domains list — avoidance of high-risk domains</li></ul>" }, saleableTo: 'All curators — pre-bid brand safety targeting (web + app, multilingual) and viewability targeting in SSP; unsafe domain list', caps: [] },
+    }
+  },
+  'ms-tbd': {
+    title: 'Full Parity & More', subtitle: 'TBD',
+    segments: {
+      advertiser: { salesView: { sellLine: "<strong>All advertisers and agencies — full parity to DV/IAS.</strong><p>Verification capabilities include:<ul><li>IVT measurement</li><li>Display, video, native, CTV and in-game</li><li>Brand safety measurement — web + app, multilingual</li><li>Viewability measurement</li><li>Attention measurement</li><li>Walled-garden measurement</li><li>Geo-compliance measurement</li></ul><p>Targeting:<ul><li>Pre-bid brand safety targeting, multilingual</li><li>Pre-bid viewability targeting</li><li>Pre-bid attention targeting</li></ul>" }, saleableTo: 'All advertisers and agencies — full parity to DV/IAS; incl. attention, walled gardens, full format + targeting coverage', caps: [
+        { text: '<strong>Attention measurement & targeting</strong> — full attention metric suite', cat: 'view', phase: 'TBD', keyBlocker: 'sales' },
+        { text: '<strong>Walled garden measurement</strong> — Facebook, Instagram, X, TikTok', cat: 'bs', phase: 'TBD', keyBlocker: 'sales' },
+        { text: '<strong>Suitability scoring</strong> — AI agents that rate or score, instead of yes/no', cat: 'trueclarity', phase: 'TBD' },
+        { text: '<strong>More brand safety categories</strong> — misinformation, UGC, AI generation, etc.', cat: 'class', phase: 'TBD' },
+        { text: '<strong>Image & video classification</strong> — extend classification to more media types', cat: 'class', phase: 'TBD' },
+        { text: '<strong>Out-of-geo blocking</strong> — prevent delivery if out-of-geo', cat: 'trueclarity', phase: 'TBD' },
+        { text: '<strong>Brand safety explainability</strong> — plain language explanations about why content was classified', cat: 'bs', phase: 'TBD' },
+        { text: '<strong>CTV viewability proxy metric</strong> — fully on-screen measurement for CTV; proxy for viewability when not technically measurable', cat: 'view', phase: 'TBD' },
+        { text: '<strong>In-game viewability</strong> — measurement in non-standard game environments', cat: 'view', phase: 'TBD' },
+        { text: '<strong>Carbon metrics</strong> — sustainability reporting or targeting', cat: 'trueclarity', phase: 'TBD' },
+        { text: '<strong>Ad server workflow automation</strong> — wrapping automation', cat: 'trueclarity', phase: 'TBD' },
+      ]},
+      dsp: { salesView: { sellLine: "<strong>All DSPs — full parity to DV/IAS.</strong><p>Measurement capabilities include:<ul><li>Existing IVT measurement</li><li>Display, video, native, CTV and in-game</li><li>Brand safety measurement — web + app, multilingual; limited DSP applicability</li><li>Viewability measurement</li><li>Attention measurement</li><li>Unsafe domains list — platform-wide avoidance of high-risk domains</li></ul>", integrateLine: "<strong>Full integration coverage — all major DSPs integrated for pre-bid brand safety, viewability and attention targeting.</strong><p>Goal: pre-bid targeting integrated with:<ul><li>All major DSPs — to serve advertisers</li></ul></p>" }, saleableTo: 'All DSPs — full parity to DV/IAS; measurement incl. attention; brand safety web + app, multilingual, limited DSP applicability; unsafe domain list', integrateWith: 'Full integration coverage — all major DSPs integrated for pre-bid brand safety, viewability and attention targeting', caps: [
+        { text: '<strong>Attention measurement & targeting</strong> — full attention metric suite', cat: 'view', phase: 'TBD', keyBlocker: 'both' },
+        { text: '<strong>Suitability scoring</strong> — AI agents that rate or score, instead of yes/no', cat: 'trueclarity', phase: 'TBD' },
+        { text: '<strong>More brand safety categories</strong> — misinformation, UGC, AI generation, etc.', cat: 'class', phase: 'TBD' },
+        { text: '<strong>Image & video classification</strong> — extend classification to more media types', cat: 'class', phase: 'TBD' },
+        { text: '<strong>Out-of-geo blocking</strong> — prevent delivery if out-of-geo', cat: 'trueclarity', phase: 'TBD' },
+        { text: '<strong>Brand safety explainability</strong> — plain language explanations about why content was classified', cat: 'bs', phase: 'TBD' },
+        { text: '<strong>CTV viewability proxy metric</strong> — fully on-screen measurement for CTV; proxy for viewability when not technically measurable', cat: 'view', phase: 'TBD' },
+        { text: '<strong>In-game viewability</strong> — measurement in non-standard game environments', cat: 'view', phase: 'TBD' },
+        { text: '<strong>Carbon metrics</strong> — sustainability reporting or targeting', cat: 'trueclarity', phase: 'TBD' },
+      ]},
+      ssp: { salesView: { sellLine: "<strong>All SSPs — full parity to DV/IAS.</strong><p>Measurement capabilities include:<ul><li>Existing IVT measurement</li><li>Display, video, native, CTV and in-game</li><li>Brand safety measurement — web + app, multilingual; limited SSP applicability</li><li>Viewability measurement</li><li>Attention measurement</li><li>Unsafe domains list — platform-wide avoidance of high-risk domains</li></ul>", integrateLine: "<strong>Full integration coverage — all major curation-supporting SSPs integrated for pre-bid brand safety, viewability and attention targeting.</strong><p>Goal: pre-bid targeting integrated with:<ul><li>Curation-supporting SSPs — to enable curator targeting demand</li></ul></p>" }, saleableTo: 'All SSPs — full parity to DV/IAS; measurement incl. attention; brand safety web + app, multilingual, limited SSP applicability; unsafe domain list', integrateWith: 'Full integration coverage — all major curation-supporting SSPs integrated for pre-bid brand safety, viewability and attention targeting', caps: [
+        { text: '<strong>Attention measurement & targeting</strong> — full attention metric suite', cat: 'view', phase: 'TBD', keyBlocker: 'both' },
+        { text: '<strong>Suitability scoring</strong> — AI agents that rate or score, instead of yes/no', cat: 'trueclarity', phase: 'TBD' },
+        { text: '<strong>More brand safety categories</strong> — misinformation, UGC, AI generation, etc.', cat: 'class', phase: 'TBD' },
+        { text: '<strong>Image & video classification</strong> — extend classification to more media types', cat: 'class', phase: 'TBD' },
+        { text: '<strong>Out-of-geo blocking</strong> — prevent delivery if out-of-geo', cat: 'trueclarity', phase: 'TBD' },
+        { text: '<strong>Brand safety explainability</strong> — plain language explanations about why content was classified', cat: 'bs', phase: 'TBD' },
+        { text: '<strong>CTV viewability proxy metric</strong> — fully on-screen measurement for CTV; proxy for viewability when not technically measurable', cat: 'view', phase: 'TBD' },
+        { text: '<strong>In-game viewability</strong> — measurement in non-standard game environments', cat: 'view', phase: 'TBD' },
+        { text: '<strong>Carbon metrics</strong> — sustainability reporting or targeting', cat: 'trueclarity', phase: 'TBD' },
+      ]},
+      publisher: { salesView: { sellLine: "<strong>All publishers — full parity to DV/IAS.</strong><p>Measurement capabilities include:<ul><li>IVT measurement</li><li>Display, video, native, CTV and in-game</li><li>Brand safety measurement — web + app, multilingual</li><li>Viewability measurement</li><li>Attention measurement</li></ul><p>Targeting:<ul><li>Viewability targeting — in publisher ad server</li><li>Brand safety targeting — in publisher ad server</li><li>Attention targeting — in publisher ad server</li></ul>" }, saleableTo: 'All publishers — full parity to DV/IAS; incl. attention measurement + targeting, full format coverage', caps: [
+        { text: '<strong>Attention measurement & targeting</strong> — full attention metric suite', cat: 'view', phase: 'TBD', keyBlocker: 'sales' },
+        { text: '<strong>Suitability scoring</strong> — AI agents that rate or score, instead of yes/no', cat: 'trueclarity', phase: 'TBD' },
+        { text: '<strong>More brand safety categories</strong> — misinformation, UGC, AI generation, etc.', cat: 'class', phase: 'TBD' },
+        { text: '<strong>Image & video classification</strong> — extend classification to more media types', cat: 'class', phase: 'TBD' },
+        { text: '<strong>Out-of-geo blocking</strong> — prevent delivery if out-of-geo', cat: 'trueclarity', phase: 'TBD' },
+        { text: '<strong>Brand safety explainability</strong> — plain language explanations about why content was classified', cat: 'bs', phase: 'TBD' },
+        { text: '<strong>CTV viewability proxy metric</strong> — fully on-screen measurement for CTV; proxy for viewability when not technically measurable', cat: 'view', phase: 'TBD' },
+        { text: '<strong>In-game viewability</strong> — measurement in non-standard game environments', cat: 'view', phase: 'TBD' },
+        { text: '<strong>Carbon metrics</strong> — sustainability reporting or targeting', cat: 'trueclarity', phase: 'TBD' },
+      ]},
+      curator: { salesView: { sellLine: "<strong>All curators — full parity to DV/IAS.</strong><p>Targeting capabilities include:<ul><li>Pre-bid brand safety targeting — in curator's SSP, web + app, multilingual</li><li>Pre-bid viewability targeting — in curator's SSP</li><li>Pre-bid attention targeting — in curator's SSP</li><li>Unsafe domains list — avoidance of high-risk domains</li></ul>" }, saleableTo: 'All curators — full parity to DV/IAS; pre-bid brand safety (multilingual), viewability and attention targeting in SSP; unsafe domain list', caps: [
+        { text: '<strong>Suitability scoring</strong> — AI agents that rate or score, instead of yes/no', cat: 'trueclarity', phase: 'TBD' },
+        { text: '<strong>More brand safety categories</strong> — misinformation, UGC, AI generation, etc.', cat: 'class', phase: 'TBD' },
+        { text: '<strong>Image & video classification</strong> — extend classification to more media types', cat: 'class', phase: 'TBD' },
+        { text: '<strong>Brand safety explainability</strong> — plain language explanations about why content was classified', cat: 'bs', phase: 'TBD' },
+        { text: '<strong>Attention targeting</strong> — target inventory with high attention', cat: 'targeting', phase: 'TBD', keyBlocker: 'sales' },
+        { text: '<strong>CTV viewability proxy metric</strong> — fully on-screen measurement for CTV; proxy for viewability when not technically measurable', cat: 'view', phase: 'TBD' },
+        { text: '<strong>Carbon metrics</strong> — sustainability targeting', cat: 'trueclarity', phase: 'TBD' },
+      ]},
+    }
+  },
+};
+
+const SEGMENTS = [
+  { id: 'advertiser', name: 'Advertiser / Agency', icon: 'Target',            wide: true },
+  { id: 'dsp',        name: 'DSP',                 icon: 'SlidersHorizontal' },
+  { id: 'ssp',        name: 'SSP / Exchange', icon: 'Network' },
+  { id: 'publisher',  name: 'Publisher',            icon: 'Newspaper' },
+  { id: 'curator',    name: 'Curator',              icon: 'Filter' },
+];
+
+function lucideIcon(name) {
+  try {
+    const iconFn = lucide[name];
+    if (!iconFn) return '';
+    // lucide UMD exports icons as [tag, attrs, children] tuples
+    const [tag, attrs, children] = iconFn;
+    const attrStr = Object.entries({ ...attrs, width: 16, height: 16, 'stroke-width': 1.75 })
+      .map(([k, v]) => `${k}="${v}"`).join(' ');
+    const childStr = (children || []).map(([t, a]) =>
+      `<${t} ${Object.entries(a).map(([k,v]) => `${k}="${v}"`).join(' ')}/>`
+    ).join('');
+    return `<svg ${attrStr}>${childStr}</svg>`;
+  } catch(e) { return ''; }
+}
+
+// ── State: nowIndex is between phases
+// 0 = before everything, 1 = after phase 0, ..., N = after all phases
+// We default to "after phase 0 (Done)" = index 1
+let nowIndex = 1; // 0..PHASES.length
+let salesMode = false;
+let animGen = 0; // incremented on each render; stale async callbacks check against this
+
+// ── State persistence ──────────────────────────────────────────────────────
+const STATE_KEY = 'rmv_state';
+function saveState() {
+  const col = document.querySelector('.roadmap-col');
+  const caps = document.getElementById('capsCol');
+  localStorage.setItem(STATE_KEY, JSON.stringify({
+    leftScroll:  col  ? col.scrollTop  : 0,
+    rightScroll: caps ? caps.scrollTop : 0,
+    salesMode
+  }));
+}
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STATE_KEY)) || {}; }
+  catch(e) { return {}; }
+}
+
+// ── Onboarding Tour ──────────────────────────────────────────────────────────
+const TOUR_KEY = 'rmv_toured';
+let tourStep = 0;
+const TOUR_STEPS = [
+  {
+    target: () => document.querySelector('.roadmap-col'),
+    text: '<strong>This is the timeline.</strong> Scroll it vertically to advance through time. Each quarter ends with a <strong>milestone</strong>.',
+    position: 'right',
+  },
+  {
+    target: () => document.getElementById('capsCol'),
+    text: '<strong>These cards update at each milestone.</strong> As you scroll past a milestone, they reflect what\'s saleable to each customer segment at that point in time.',
+    position: 'left',
+  },
+  {
+    target: () => {
+      const a = document.getElementById('modeStandard').getBoundingClientRect();
+      const b = document.getElementById('modeSales').getBoundingClientRect();
+      return {
+        left: Math.min(a.left, b.left) - 6,   top:    Math.min(a.top, b.top) - 6,
+        width: Math.max(a.right, b.right) - Math.min(a.left, b.left) + 12,
+        height: Math.max(a.bottom, b.bottom) - Math.min(a.top, b.top) + 12,
+        right: Math.max(a.right, b.right) + 6, bottom: Math.max(a.bottom, b.bottom) + 6,
+      };
+    },
+    text: '<strong>Standard Mode</strong> shows available capabilities. <strong>Sales Mode</strong> flips to a sales-focused view — who to target, what to pitch, and what capability gaps remain.',
+    position: 'below',
+  },
+];
+
+function maybeShowTour() {
+  if (localStorage.getItem(TOUR_KEY)) return;
+  tourStep = 0;
+  showTourStep();
+}
+
+function showTourStep() {
+  const overlay   = document.getElementById('tourOverlay');
+  const spotlight = document.getElementById('tourSpotlight');
+  const card      = document.getElementById('tourCard');
+  overlay.classList.remove('hidden');
+
+  const step = TOUR_STEPS[tourStep];
+  document.getElementById('tourText').innerHTML = step.text;
+  document.getElementById('tourNextBtn').textContent = tourStep === TOUR_STEPS.length - 1 ? 'Got it' : 'Next →';
+  for (let i = 0; i < TOUR_STEPS.length; i++)
+    document.getElementById('tourDot' + i).classList.toggle('active', i === tourStep);
+
+  const raw  = step.target();
+  const rect = raw instanceof Element ? raw.getBoundingClientRect() : raw;
+  const pad  = 8;
+  spotlight.style.left   = (rect.left   - pad) + 'px';
+  spotlight.style.top    = (rect.top    - pad) + 'px';
+  spotlight.style.width  = (rect.width  + pad * 2) + 'px';
+  spotlight.style.height = (rect.height + pad * 2) + 'px';
+  spotlight.classList.add('pulse');
+
+  // Position card relative to spotlight
+  const margin = 20, cardW = 280, cardH = 140;
+  const vW = window.innerWidth, vH = window.innerHeight;
+  let left, top;
+  if (step.position === 'right' && rect.right + margin + cardW < vW) {
+    left = rect.right + margin;
+    top  = Math.max(margin, Math.min(vH - cardH - margin, rect.top + rect.height / 2 - cardH / 2));
+  } else if (step.position === 'left' && rect.left - margin - cardW > 0) {
+    left = rect.left - margin - cardW;
+    top  = Math.max(margin, Math.min(vH - cardH - margin, rect.top + rect.height / 2 - cardH / 2));
+  } else {
+    left = Math.max(margin, Math.min(vW - cardW - margin, rect.left + rect.width / 2 - cardW / 2));
+    top  = Math.min(vH - cardH - margin, rect.bottom + margin);
+  }
+  card.style.left = left + 'px';
+  card.style.top  = top  + 'px';
+}
+
+function nextTourStep() {
+  tourStep++;
+  if (tourStep >= TOUR_STEPS.length) endTour();
+  else showTourStep();
+}
+
+function skipTour() { endTour(); }
+
+function endTour() {
+  document.getElementById('tourOverlay').classList.add('hidden');
+  localStorage.setItem(TOUR_KEY, '1');
+}
+
+// ── Render phases (static, no buttons) ─────────────────────────────────────
+function renderPhases() {
+  const list = document.getElementById('phasesList');
+  list.innerHTML = '';
+
+  PHASES.forEach((phase, pi) => {
+    // Cluster status relative to nowIndex
+    // past = phase fully behind the line (pi < nowIndex)
+    // current = phase the line sits within or just after (pi === nowIndex - 1 when line is after this phase... actually we treat "current" as the boundary phase)
+    // We define: past = pi < nowIndex-1, current = pi === nowIndex-1, future = pi >= nowIndex
+    let status;
+    if (pi < nowIndex - 1) status = 'past';
+    else if (pi === nowIndex - 1) status = 'current';
+    else status = 'future';
+
+    // If nowIndex === 0, all are future
+    if (nowIndex === 0) status = 'future';
+    // If nowIndex === PHASES.length, all are past except last which is current
+    if (nowIndex === PHASES.length && pi === PHASES.length - 1) status = 'current';
+
+    const cluster = document.createElement('div');
+    cluster.className = `phase-cluster status-${status}`;
+    cluster.dataset.phaseIdx = pi;
+
+    const badgeText = status === 'past' ? '✓ complete' : status === 'current' ? '● in progress' : 'upcoming';
+    cluster.innerHTML = `
+      <div class="cluster-header">
+        <span class="cluster-phase-label">${phase.label}</span>
+        <span class="cluster-title">${phase.title}</span>
+        <span class="cluster-status-badge badge-${status}">${badgeText}</span>
+      </div>
+      <div class="cluster-body">
+        <div class="chips-grid">
+          ${phase.items.map(item => `
+            <span class="item-chip"><span class="chip-dot dot-${item.cat}"></span><span>${item.label}</span></span>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    list.appendChild(cluster);
+
+
+    // Milestone after each phase
+    const msUnlocked = pi < nowIndex;
+    const ms = document.createElement('div');
+    ms.className = `milestone-flag${msUnlocked ? ' unlocked' : ''}`;
+    ms.dataset.msIdx = pi;
+    ms.innerHTML = `
+      <div class="ms-diamond"></div>
+      <div class="ms-text">
+        <div class="ms-title">⚑ &nbsp;${phase.milestone.label}</div>
+        <div class="ms-sub">${phase.milestone.sub}</div>
+      </div>
+      <span class="ms-badge">${msUnlocked ? 'unlocked' : 'locked'}</span>
+    `;
+    list.appendChild(ms);
+  });
+
+}
+
+// ── Scroll-driven now-line ─────────────────────────────────────────────────
+// The now-line is a fixed rule at ~40% down the left panel viewport.
+// As you scroll, milestones that pass above the line unlock capabilities.
+
+const NOW_LINE_FRAC = 0.40; // 40% down the panel
+
+function getNowLineViewportY() {
+  const line = document.getElementById('nowLineFixed');
+  if (!line) {
+    const col = document.querySelector('.roadmap-col');
+    const colRect = col.getBoundingClientRect();
+    return colRect.top + colRect.height * 0.5;
+  }
+  return parseFloat(line.style.top) || 0;
+}
+
+function updateNowFromScroll() {
+  const list = document.getElementById('phasesList');
+  if (!list) return;
+  const clusters = list.querySelectorAll('.phase-cluster');
+  const milestones = list.querySelectorAll('.milestone-flag');
+  if (!clusters.length) return;
+
+  const lineY = getNowLineViewportY();
+
+  // Determine each cluster's state directly from its position
+  let capsIndex = 0; // how many milestones have been crossed (for capabilities)
+  clusters.forEach((cl, i) => {
+    const clRect = cl.getBoundingClientRect();
+    cl.classList.remove('status-past', 'status-current', 'status-future');
+    let s;
+    if (clRect.bottom < lineY) {
+      s = 'past';       // fully above the line
+      capsIndex = i + 1;
+    } else if (clRect.top < lineY) {
+      s = 'current';    // straddling the line
+    } else {
+      s = 'future';     // below the line
+    }
+    cl.classList.add('status-' + s);
+    const badge = cl.querySelector('.cluster-status-badge');
+    if (badge) {
+      badge.className = 'cluster-status-badge badge-' + s;
+      badge.textContent = s === 'past' ? '✓ complete' : s === 'current' ? '● in progress' : 'upcoming';
+    }
+  });
+
+  // Milestone unlock: when milestone top crosses the line
+  milestones.forEach((ms, i) => {
+    const msRect = ms.getBoundingClientRect();
+    const unlocked = msRect.top < lineY;
+    ms.classList.toggle('unlocked', unlocked);
+    const badge = ms.querySelector('.ms-badge');
+    if (badge) badge.textContent = unlocked ? 'unlocked' : 'locked';
+    // Fire confetti when the final milestone unlocks
+    if (unlocked && i === milestones.length - 1) launchConfetti();
+  });
+
+  // Update capabilities based on how many milestones have been crossed
+  let newIndex = 0;
+  milestones.forEach((ms, i) => {
+    if (ms.getBoundingClientRect().top < lineY) newIndex = i + 1;
+  });
+
+  if (newIndex !== nowIndex) {
+    nowIndex = newIndex;
+    renderCapabilities();
+  }
+}
+
+function updatePhaseStates() {
+  const list = document.getElementById('phasesList');
+  const clusters = list.querySelectorAll('.phase-cluster');
+  clusters.forEach((cl, pi) => {
+    cl.classList.remove('status-past', 'status-current', 'status-future');
+    let s;
+    if (nowIndex === 0) s = pi === 0 ? 'current' : 'future';
+    else if (nowIndex >= PHASES.length) s = pi < PHASES.length - 1 ? 'past' : 'current';
+    else if (pi < nowIndex - 1) s = 'past';
+    else if (pi === nowIndex - 1) s = 'current';
+    else s = 'future';
+    cl.classList.add('status-' + s);
+    const badge = cl.querySelector('.cluster-status-badge');
+    if (badge) {
+      badge.className = 'cluster-status-badge badge-' + s;
+      badge.textContent = s === 'past' ? '✓ complete' : s === 'current' ? '● in progress' : 'upcoming';
+    }
+  });
+}
+
+function setBottomPadding() {
+  const col = document.querySelector('.roadmap-col');
+  const list = document.getElementById('phasesList');
+  // Pad by a full column height — guarantees the last milestone can scroll up to the now-line
+  // and the first milestone can scroll down to the now-line
+  const pad = Math.round(col.clientHeight);
+  list.style.paddingBottom = pad + 'px';
+  list.style.paddingTop = pad + 'px';
+}
+
+function positionNowLine() {
+  const col = document.querySelector('.roadmap-col');
+  let line = document.getElementById('nowLineFixed');
+  if (!line) {
+    line = document.createElement('div');
+    line.id = 'nowLineFixed';
+    document.body.appendChild(line); // fixed positioning needs to be in body
+  }
+  const colRect = col.getBoundingClientRect();
+  // Pin the line at the vertical centre of the column
+  line.style.top = Math.round(colRect.top + colRect.height * 0.5) + 'px';
+  line.style.left = colRect.left + 'px';
+  line.style.width = colRect.width + 'px';
+}
+
+function scrollToNow() {
+  // We're in March 2026 — partway through Q1.
+  // Scroll so the Q1 2026 cluster (index 1) top sits just at the YOU ARE HERE line,
+  // showing it as "in progress" and the Done cluster as past.
+  const col = document.querySelector('.roadmap-col');
+  const list = document.getElementById('phasesList');
+  const clusters = list.querySelectorAll('.phase-cluster');
+  if (clusters.length < 2) return;
+
+  const colRect = col.getBoundingClientRect();
+  const lineViewportY = colRect.top + colRect.height * 0.5;
+
+  const q1 = clusters[1]; // Q1 2026
+  const q1ScrollY = list.offsetTop + q1.offsetTop;
+  // Place the cluster top just a few px below the line so it reads as current
+  col.scrollTop = q1ScrollY - (lineViewportY - colRect.top) + 4;
+}
+
+// ── Confetti ───────────────────────────────────────────────────────────────
+let confettiFired = false;
+
+function launchConfetti() {
+  if (confettiFired) return;
+  confettiFired = true;
+
+  const canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;';
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const palette = ['#00e5a0','#a78bfa','#60a5fa','#f472b6','rgba(255,220,80,0.9)','#f87171'];
+  const COUNT = 90;
+  const pieces = Array.from({ length: COUNT }, () => ({
+    x: Math.random() * canvas.width,
+    y: -10 - Math.random() * 120,
+    w: 5 + Math.random() * 5,
+    h: 3 + Math.random() * 3,
+    color: palette[Math.floor(Math.random() * palette.length)],
+    angle: Math.random() * Math.PI * 2,
+    spin: (Math.random() - 0.5) * 0.15,
+    vx: (Math.random() - 0.5) * 2,
+    vy: 1.5 + Math.random() * 2.5,
+    opacity: 0.8 + Math.random() * 0.2,
+  }));
+
+  let elapsed = 0;
+  const DURATION = 3000;
+
+  function draw(ts) {
+    if (!elapsed) elapsed = ts;
+    const t = ts - elapsed;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    pieces.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.04;
+      p.angle += p.spin;
+      const fade = t > DURATION * 0.6 ? 1 - (t - DURATION * 0.6) / (DURATION * 0.4) : 1;
+      if (p.y < canvas.height + 20) alive = true;
+      ctx.save();
+      ctx.globalAlpha = p.opacity * Math.max(0, fade);
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      ctx.restore();
+    });
+    if (alive && t < DURATION * 1.5) requestAnimationFrame(draw);
+    else canvas.remove();
+  }
+
+  requestAnimationFrame(draw);
+}
+
+// ── Capabilities ──────────────────────────────────────────────────────────
+// ── Sales Mode ────────────────────────────────────────────────────────────
+function setMode(isSales) {
+  if (salesMode === isSales) return;
+  const fromSales = salesMode;
+  salesMode = isSales;
+  document.getElementById('modeStandard').classList.toggle('active', !salesMode);
+  document.getElementById('modeSales').classList.toggle('active', salesMode);
+  document.getElementById('capsLabel').textContent = salesMode ? 'Sales Viability' : 'Unlocked Capabilities';
+  renderCapabilities(fromSales, true);
+  saveState();
+}
+
+function buildBlockerLists(segId, nowIndex) {
+  const milestoneOrder = PHASES.map(p => p.milestone.id);
+  const futureMs = milestoneOrder.slice(nowIndex); // everything after current
+  const comingSoon = [];
+  const later = [];
+
+  futureMs.forEach((msId, i) => {
+    const msData = MILESTONE_CAPS[msId];
+    if (!msData) return;
+    const segData = msData.segments[segId];
+    if (!segData) return;
+
+    segData.caps.forEach(cap => {
+      if (!cap.keyBlocker) return;
+      const relevant = cap.keyBlocker === 'both' || cap.keyBlocker === 'sales'
+        || ((segId === 'dsp' || segId === 'ssp') && cap.keyBlocker === 'integration');
+      if (!relevant) return;
+      const item = { text: cap.text, phase: MILESTONE_CAPS[msId].subtitle, blockerType: cap.keyBlocker };
+      if (i === 0) comingSoon.push(item);
+      else later.push(item);
+    });
+  });
+
+  return { comingSoon, later };
+}
+
+function buildSalesBack(seg, allCaps, nowIndex) {
+  const segId = seg.id;
+  const segData = allCaps[segId] || {};
+  const sv = segData.salesView || {};
+  const sellLine = sv.sellLine || segData.saleableTo || null;
+  const integrateLine = (segId === 'dsp' || segId === 'ssp') ? (sv.integrateLine || segData.integrateWith || null) : null;
+
+  const { comingSoon, later } = buildBlockerLists(segId, nowIndex);
+
+  let html = '';
+
+  // Header — matches front card style
+  html += `<div class="seg-header">
+    <span class="seg-icon">${lucideIcon(seg.icon)}</span>
+    <span class="seg-name">${seg.name}</span>
+  </div>`;
+
+  // Sell to section
+  const sellClass = sellLine ? '' : ' empty';
+  const sellText = sellLine || 'Nothing saleable yet at this stage';
+  html += `<div class="sales-section">
+    <div class="sales-section-label">Sell to:</div>
+    <div class="sales-sell-line${sellClass}">${sellText}</div>
+  </div>`;
+
+  // Integration value section (DSP/SSP only)
+  if (integrateLine) {
+    html += `<div class="sales-section">
+      <div class="sales-section-label">Integration Prospects:</div>
+      <div class="sales-sell-line">${integrateLine}</div>
+    </div>`;
+  }
+
+  // Capability gaps section
+  if (comingSoon.length || later.length) {
+    const blockerItems = (items) => items.map(item => `
+      <div class="blocker-item">
+        <div class="blocker-dot"></div>
+        <div class="blocker-text">${item.text}</div>
+        <div class="blocker-timing">${item.phase}</div>
+      </div>`).join('');
+
+    let gapsHtml = '';
+    if (comingSoon.length) {
+      gapsHtml += `<div class="blocker-subheading">Coming soon</div>${blockerItems(comingSoon)}`;
+    }
+    if (later.length) {
+      gapsHtml += `<div class="blocker-subheading">Later</div>${blockerItems(later)}`;
+    }
+
+    html += `<div class="sales-section">
+      <div class="sales-section-label">Key Capability Gaps:</div>
+      ${gapsHtml}
+    </div>`;
+  }
+
+  return html;
+}
+
+// ── Capabilities ──────────────────────────────────────────────────────────
+function renderCapabilities(fromSales = false, animate = false) {
+  const allCaps = {
+    advertiser: { saleableTo: null, salesView: null, integrateWith: null, caps: [] },
+    dsp:        { saleableTo: null, salesView: null, integrateWith: null, caps: [] },
+    ssp:        { saleableTo: null, salesView: null, integrateWith: null, caps: [] },
+    publisher:  { saleableTo: null, salesView: null, integrateWith: null, caps: [] },
+    curator:    { saleableTo: null, salesView: null, integrateWith: null, caps: [] },
+  };
+
+  for (let i = 0; i < nowIndex; i++) {
+    const msData = MILESTONE_CAPS[PHASES[i].milestone.id];
+    if (msData) Object.keys(allCaps).forEach(seg => {
+      const segData = msData.segments[seg];
+      if (segData) {
+        // Apply new caps (skip suppressed ids)
+        const suppress = new Set(segData.suppress || []);
+        segData.caps.forEach(cap => {
+          if (cap.salesOnly && !salesMode) return; // hide salesOnly caps in normal mode
+          if (!suppress.has(cap.id)) allCaps[seg].caps.push(cap);
+        });
+        // Apply overrides: replace existing cap text/cat by id
+        if (segData.overrides) {
+          Object.entries(segData.overrides).forEach(([id, override]) => {
+            const idx = allCaps[seg].caps.findIndex(c => c.id === id);
+            if (idx !== -1) allCaps[seg].caps[idx] = { ...allCaps[seg].caps[idx], ...override };
+          });
+        }
+        if (segData.saleableTo) allCaps[seg].saleableTo = segData.saleableTo;
+        if (segData.integrateWith) allCaps[seg].integrateWith = segData.integrateWith;
+        if (segData.salesView) allCaps[seg].salesView = segData.salesView;
+      }
+    });
+  }
+
+  let titleHTML, subtitle;
+  if (nowIndex === 0) {
+    titleHTML = 'scroll to explore';
+    subtitle = '';
+  } else {
+    const info = MILESTONE_CAPS[PHASES[nowIndex - 1].milestone.id];
+    titleHTML = info.title;
+    subtitle = info.subtitle;
+  }
+
+  document.getElementById('capsTitle').innerHTML = titleHTML;
+  document.getElementById('capsSubtitle').textContent = subtitle;
+
+  const grid = document.getElementById('segmentsGrid');
+  grid.innerHTML = '';
+
+  SEGMENTS.forEach((seg, idx) => {
+    const segData = allCaps[seg.id] || { saleableTo: null, salesView: null, integrateWith: null, caps: [] };
+    const caps = segData.caps || [];
+    const sellTo = segData.saleableTo || null;
+    const integrateWith = segData.integrateWith || null;
+    const sellClass = sellTo ? '' : 'sell-none';
+    const sellText = sellTo || 'Nothing saleable yet at this stage';
+    const integrateHTML = integrateWith ? `<span><strong class="integrate-label">Integrate:</strong> ${integrateWith}</span>` : '';
+    const sellToHTML = `<div class="seg-sell-to"><span><strong>Sell:</strong> <span class="${sellClass}">${sellText}</span></span>${integrateHTML}</div>`;
+
+    const frontHTML = `
+      <div class="card-front segment-card-inner">
+        <div class="seg-header">
+          <span class="seg-icon">${lucideIcon(seg.icon)}</span>
+          <span class="seg-name">${seg.name}</span>
+          <span class="seg-count">${caps.length} ${caps.length === 1 ? 'capability' : 'capabilities'}</span>
+        </div>
+        ${sellToHTML}
+        <div class="seg-body">
+          ${caps.length === 0
+            ? '<div class="empty-state">No capabilities unlocked yet</div>'
+            : `<div class="sales-section-label" style="margin-bottom:8px;">Capabilities:</div>` + caps.map((cap, i) => `
+                <div class="cap-item" style="animation-delay:${i*0.04}s">
+                  <div class="cap-dot dot-${cap.cat}"></div>
+                  <div class="cap-text">${cap.text}</div>
+                  <div class="cap-phase">${cap.phase}</div>
+                </div>`).join('')}
+        </div>
+      </div>`;
+
+    const backHTML = `<div class="card-back">${buildSalesBack(seg, allCaps, nowIndex)}</div>`;
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'card-flip-wrapper segment-card' + (seg.wide ? ' wide' : '');
+
+    const inner = document.createElement('div');
+    inner.className = 'card-inner';
+    inner.style.transitionDelay = `${idx * 0.06}s`;
+    inner.innerHTML = frontHTML + backHTML;
+
+    wrapper.appendChild(inner);
+    grid.appendChild(wrapper);
+  });
+
+  const maxDelay = (SEGMENTS.length - 1) * 60 + 500 + 50;
+  const gen = ++animGen;
+
+  if (salesMode && animate) {
+    // Toggle into sales: pin front height, flip (CSS collapses front / promotes back),
+    // min-height transition smooths the height change
+    requestAnimationFrame(() => {
+      if (animGen !== gen) return;
+      const inners = [...grid.querySelectorAll('.card-inner')];
+      inners.forEach(inner => {
+        inner.style.minHeight = inner.getBoundingClientRect().height + 'px';
+      });
+      requestAnimationFrame(() => {
+        if (animGen !== gen) return;
+        inners.forEach(inner => {
+          inner.style.minHeight = '';
+          inner.classList.add('flipped');
+        });
+      });
+    });
+  } else if (salesMode) {
+    // Scroll while already in sales mode: set flipped state instantly (no animation)
+    grid.querySelectorAll('.card-inner').forEach(inner => {
+      inner.style.transition = 'none';
+      inner.classList.add('flipped');
+    });
+    requestAnimationFrame(() => {
+      if (animGen !== gen) return;
+      grid.querySelectorAll('.card-inner').forEach(inner => inner.style.transition = '');
+    });
+  } else if (fromSales) {
+    // Flip out: start from flipped state instantly, then animate back to front
+    requestAnimationFrame(() => {
+      if (animGen !== gen) return;
+      const inners = [...grid.querySelectorAll('.card-inner')];
+      inners.forEach(inner => {
+        inner.style.transition = 'none';
+        inner.classList.add('flipped');
+      });
+      requestAnimationFrame(() => {
+        if (animGen !== gen) return;
+        inners.forEach(inner => {
+          inner.style.transition = '';
+          inner.classList.remove('flipped');
+        });
+      });
+    });
+  }
+}
+
+function render() {
+  const saved = loadState();
+
+  // Restore sales mode before first render
+  if (saved.salesMode) {
+    salesMode = true;
+    document.getElementById('modeStandard').classList.remove('active');
+    document.getElementById('modeSales').classList.add('active');
+    document.getElementById('capsLabel').textContent = 'Sales Viability';
+  }
+
+  renderPhases();
+  renderCapabilities();
+  positionNowLine();
+  setBottomPadding(); // apply top+bottom padding before scroll so offsetTops are correct
+
+  const col = document.querySelector('.roadmap-col');
+  const caps = document.getElementById('capsCol');
+
+  col.addEventListener('scroll', () => { updateNowFromScroll(); saveState(); }, { passive: true });
+  caps.addEventListener('scroll', saveState, { passive: true });
+
+  window.addEventListener('resize', () => { positionNowLine(); setBottomPadding(); });
+
+  // Restore scroll positions or fall back to scrollToNow
+  if (saved.leftScroll != null) {
+    col.scrollTop = saved.leftScroll;
+  } else {
+    scrollToNow();
+  }
+
+  requestAnimationFrame(() => {
+    positionNowLine();
+    setBottomPadding();
+    updateNowFromScroll();
+    // Restore right panel scroll after layout settles
+    if (saved.rightScroll != null) caps.scrollTop = saved.rightScroll;
+  });
+}
+
+render();
+window.addEventListener('load', maybeShowTour);
+</script>
+<!-- ── ONBOARDING TOUR ── -->
+<div id="tourOverlay" class="tour-overlay hidden">
+  <div id="tourSpotlight" class="tour-spotlight"></div>
+  <div id="tourCard" class="tour-card">
+    <div class="tour-card-text" id="tourText"></div>
+    <div class="tour-actions">
+      <button class="tour-btn-skip" onclick="skipTour()">Skip</button>
+      <div class="tour-dots">
+        <span class="tour-dot" id="tourDot0"></span>
+        <span class="tour-dot" id="tourDot1"></span>
+        <span class="tour-dot" id="tourDot2"></span>
+      </div>
+      <button class="tour-btn-next" id="tourNextBtn" onclick="nextTourStep()">Next →</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
